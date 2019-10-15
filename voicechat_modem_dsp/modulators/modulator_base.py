@@ -1,5 +1,4 @@
 import numpy as np
-from scipy import signal
 
 """
 Base class for other modulator objects

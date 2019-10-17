@@ -5,6 +5,11 @@ def read_bitpos(bitstream,position):
     shift_val=7-position%8
     return bool((bitstream[byteindex] & (1<<shift_val)) >> shift_val)
 
+def read_bitstream_iterator(bitstream):
+    for byte in bitstream:
+        for shift_val in range(7,-1,-1):
+            yield bool((byte & (1<<shift_val)) >> shift_val)
+
 def write_bitpos(bitstream, position, bit):
     # Modifies bitstream in place so raise TypeError if wrong type
     if isinstance(bitstream, bytes):

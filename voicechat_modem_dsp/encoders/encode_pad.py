@@ -1,13 +1,15 @@
 from .bitstream import read_bitstream_iterator
 
-# Return string for compatibility with base64 module functions
+import base64
+
+# In custom encoders, return bytes as output type
+# for compatibility with base64 module functions
 def base_2_encode(bitstream):
     return_list=list()
     for bit in read_bitstream_iterator(bitstream):
         return_list.append(1 if bit else 0)
-    return "".join((str(x) for x in return_list))   
+    return bytes("".join((str(x) for x in return_list)))
 
-# Return string for compatibility with base64 module functions
 def base_4_encode(bitstream):
     return_list=list()
     rollover_counter=0
@@ -20,9 +22,8 @@ def base_4_encode(bitstream):
         else:
             rollover_counter+=(2 if bit else 0)
         emit_symbol=not emit_symbol
-    return "".join((str(x) for x in return_list)) 
+    return bytes("".join((str(x) for x in return_list)))
 
-# Return string for compatibility with base64 module functions
 def base_8_encode(bitstream):
     return_list=list()
     rollover_counter=0
@@ -42,4 +43,23 @@ def base_8_encode(bitstream):
             rollover_counter+=1
     if emit_symbol_counter!=0:
         return_list.append(rollover_counter)
-    return "".join((str(x) for x in return_list)) 
+    return bytes("".join((str(x) for x in return_list)))
+
+def base_16_encode(bitstream):
+    return base64.b16encode(bitstream)
+
+def base_32_encode(bitstream):
+    bytearr_ret=bytearray(base64.b32encode(bitstream))
+    # Remove padding because we do not need it for this use case
+    bytearr_ret.replace("=","")
+    return bytes(bytearr_ret)
+
+def base_64_encode(bitstream):
+    bytearr_ret=bytearray(base64.b64encode(bitstream))
+    # Remove padding because we do not need it for this use case
+    bytearr_ret.replace("=","")
+    return bytes(bytearr_ret)
+
+# Bitstream already base 256 so this is a no-op
+def base_256_encode(bitstream):
+    return bitstream

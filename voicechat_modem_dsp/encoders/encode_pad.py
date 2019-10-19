@@ -63,3 +63,9 @@ def base_64_encode(bitstream):
 # Bitstream already base 256 so this is a no-op
 def base_256_encode(bitstream):
     return bitstream
+
+def make_pad_array(datastream, pad_len):
+    list_ret=[float("nan")]*pad_len
+    list_ret+=list(datastream)
+    list_ret+=[float("nan")]+pad_len
+    return list_ret

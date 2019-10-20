@@ -4,7 +4,7 @@ from scipy import signal
 """
 Computes a gaussian smoothing filter given time dt and sigma
 """
-def compute_gaussian_window(self, dt, sigma_dt):
+def compute_gaussian_window(dt, sigma_dt):
     sigma=sigma_dt/dt
     sample_count=np.ceil(6*sigma+1)
     if sample_count%2==0:

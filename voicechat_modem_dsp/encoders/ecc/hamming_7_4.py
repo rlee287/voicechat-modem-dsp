@@ -1,6 +1,6 @@
 import math
 
-from ..bitstream import read_bitpos, write_bitpos
+from ..bitstream import read_bitstream, write_bitstream
 
 # Functions should accept either bytes or bytearrays
 # Manipulate bytearrays during construction but return bytes
@@ -22,13 +22,13 @@ def hamming_encode_7_4(bitstream):
         bit4=bit5 ^ bit6 ^ bit7
         
         # Write computed data
-        write_bitpos(output_arr,output_index,bit1)
-        write_bitpos(output_arr,output_index+1,bit2)
-        write_bitpos(output_arr,output_index+2,bit3)
-        write_bitpos(output_arr,output_index+3,bit4)
-        write_bitpos(output_arr,output_index+4,bit5)
-        write_bitpos(output_arr,output_index+5,bit6)
-        write_bitpos(output_arr,output_index+6,bit7)
+        write_bitstream(output_arr,output_index,bit1)
+        write_bitstream(output_arr,output_index+1,bit2)
+        write_bitstream(output_arr,output_index+2,bit3)
+        write_bitstream(output_arr,output_index+3,bit4)
+        write_bitstream(output_arr,output_index+4,bit5)
+        write_bitstream(output_arr,output_index+5,bit6)
+        write_bitstream(output_arr,output_index+6,bit7)
         output_index+=7
     return bytes(output_arr)
 
@@ -40,13 +40,13 @@ def hamming_decode_7_4(bitstream):
     output_index=0
     for i in range(0,8*len(bitstream),7):
         try:
-            bit3=read_bitpos(bitstream,i+2)
-            bit5=read_bitpos(bitstream,i+4)
-            bit6=read_bitpos(bitstream,i+5)
-            bit7=read_bitpos(bitstream,i+6)
-            bit1=read_bitpos(bitstream,i)
-            bit2=read_bitpos(bitstream,i+1)
-            bit4=read_bitpos(bitstream,i+3)
+            bit3=read_bitstream(bitstream,i+2)
+            bit5=read_bitstream(bitstream,i+4)
+            bit6=read_bitstream(bitstream,i+5)
+            bit7=read_bitstream(bitstream,i+6)
+            bit1=read_bitstream(bitstream,i)
+            bit2=read_bitstream(bitstream,i+1)
+            bit4=read_bitstream(bitstream,i+3)
         except ValueError:
             # Less than 7 elements left at the end, ignore padding
             break
@@ -72,9 +72,9 @@ def hamming_decode_7_4(bitstream):
         elif error_location==7:
             bit7=not bit7
 
-        write_bitpos(output_arr,output_index,bit3)
-        write_bitpos(output_arr,output_index+1,bit5)
-        write_bitpos(output_arr,output_index+2,bit6)
-        write_bitpos(output_arr,output_index+3,bit7)
+        write_bitstream(output_arr,output_index,bit3)
+        write_bitstream(output_arr,output_index+1,bit5)
+        write_bitstream(output_arr,output_index+2,bit6)
+        write_bitstream(output_arr,output_index+3,bit7)
         output_index+=4
     return bytes(output_arr)

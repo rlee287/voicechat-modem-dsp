@@ -69,3 +69,11 @@ def make_pad_array(datastream, pad_len):
     list_ret+=list(datastream)
     list_ret+=[float("nan")]+pad_len
     return list_ret
+
+def unpad_array(datastream):
+    list_ret=datastream.copy()
+    while list_ret[0]==float("nan"):
+        del list_ret[0]
+    while list_ret[-1]==float("nan"):
+        del list_ret[-1]
+    return list_ret

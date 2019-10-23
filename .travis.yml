@@ -14,11 +14,10 @@ install:
   - pip install pipenv
   - rm Pipfile.lock # Re-lock dependencies
   - pipenv lock -r > requirements.txt
-  - pipenv lock -r -d >> requirements.txt
-  - cat Pipfile.lock
   - cat requirements.txt
-  - pipenv --support
   - pip install -r requirements.txt
+  - pip install pytest coverage
+  - echo $TRAVIS_PYTHON_VERSION
 
 script:
   - sh ./run_tests_coverage.sh

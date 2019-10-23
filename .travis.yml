@@ -10,11 +10,10 @@ python:
 
 install:
   - pip install pipenv
+  - rm Pipfile.lock # Re-lock dependencies
   - pipenv lock -r > requirements.txt
   - pipenv lock -r -d >> requirements.txt
   - pip install -r requirements.txt
-  - cat requirements.txt
-  - ls
 
 script:
   - sh ./run_tests_coverage.sh

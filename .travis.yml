@@ -17,6 +17,7 @@ install:
   - pipenv lock -r -d >> requirements.txt
   - cat Pipfile.lock
   - cat requirements.txt
+  - pipenv --support
   - pip install -r requirements.txt
 
 script:

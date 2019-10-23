@@ -1,3 +1,5 @@
+# Bitstream functions are MSB first
+
 def read_bitstream(bitstream,position):
     if position<0 or position>=8*len(bitstream):
         raise ValueError("Position index is out of range")

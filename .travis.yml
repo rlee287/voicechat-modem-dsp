@@ -13,6 +13,8 @@ install:
   - pipenv lock -r > requirements.txt
   - pipenv lock -d >> requirements.txt
   - pip install -r requirements.txt
+  - cat requirements.txt
+  - ls
 
 script:
-  - ./run_test_coverage.sh
+  - sh ./run_test_coverage.sh

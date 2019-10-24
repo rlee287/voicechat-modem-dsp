@@ -3,12 +3,10 @@ language: python
 notifications:
   email: false
 python:
-  - "2.7"
-  - "3.4"
-  - "3.5"
-  - "3.6"
   - "3.7"
-  - "3.8"
+  - "3.4"
+  - "3.6"
+  - "3.5"
 
 install:
   - if [ $TRAVIS_PYTHON_VERSION = "3.4" ]; then pip install pip==18.0; fi

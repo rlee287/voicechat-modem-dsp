@@ -18,7 +18,6 @@ install:
   - cat requirements.txt
   - pip install -r requirements.txt
   - pip install pytest coverage
-  - echo $TRAVIS_PYTHON_VERSION
 
 script:
   - sh ./run_tests_coverage.sh

@@ -12,3 +12,6 @@ protobuf = "*"
 pytest = "*"
 mypy = {version="*", python_version=">='3.5'"}
 coverage = "*"
+
+[requires]
+python_version = ">='3.4'"

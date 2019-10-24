@@ -2,11 +2,13 @@ language: python
 
 notifications:
   email: false
+
 python:
   - "3.7"
   - "3.4"
   - "3.6"
   - "3.5"
+cache: pip
 
 install:
   - if [ $TRAVIS_PYTHON_VERSION = "3.4" ]; then pip install pip==18.0; fi
@@ -20,3 +22,7 @@ install:
 
 script:
   - sh ./run_tests_coverage.sh
+
+after_script:
+  - wget -O codecov_upload "https://codecov.io/bash"
+  - bash codecov_upload

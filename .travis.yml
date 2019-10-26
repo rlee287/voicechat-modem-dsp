@@ -1,18 +1,28 @@
 language: python
 
+notifications:
+  email: false
+
 python:
-  - "2.7"
-  - "3.4"
-  - "3.5"
-  - "3.6"
   - "3.7"
-  - "3.8"
+  - "3.4"
+  - "3.6"
+  - "3.5"
+cache: pip
 
 install:
+  - if [ $TRAVIS_PYTHON_VERSION = "3.4" ]; then pip install pip==18.0; fi
   - pip install pipenv
+  - rm Pipfile.lock # Re-lock dependencies
   - pipenv lock -r > requirements.txt
-  - pipenv lock -d >> requirements.txt
+  - cat requirements.txt
   - pip install -r requirements.txt
+  - pip install pytest coverage
+  - if [ $TRAVIS_PYTHON_VERSION = "3.7" ]; then pip install mypy; fi
 
 script:
-  - ./run_test_coverage.sh
+  - sh ./run_tests_coverage.sh
+
+after_script:
+  - wget -O codecov_upload "https://codecov.io/bash"
+  - bash codecov_upload

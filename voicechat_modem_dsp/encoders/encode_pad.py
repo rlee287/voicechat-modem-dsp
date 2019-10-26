@@ -135,7 +135,11 @@ def base_32_decode(datastream):
         raise ValueError("Illegal symbol detected in datastream")
     add_pad_len=(8-(len(datastream)%8))%8
     base_32_str+="="*add_pad_len
-    return base64.b32decode(base_32_str)
+    # TODO specify proper mathematical condition
+    try:
+        return base64.b32decode(base_32_str)
+    except ValueError:
+        raise ValueError("Inappropriate datastream length")
 
 def base_64_encode(bitstream):
     base_64_mapping = {char:int_val for int_val,char in
@@ -155,6 +159,8 @@ def base_64_decode(datastream):
         base_64_str="".join([base_64_mapping[c] for c in datastream])
     except KeyError:
         raise ValueError("Illegal symbol detected in datastream")
+    if len(datastream)%4==1:
+        raise ValueError("Inappropriate datastream length")
     add_pad_len=(4-(len(datastream)%4))%4
     base_64_str+="="*add_pad_len
     return base64.b64decode(base_64_str)

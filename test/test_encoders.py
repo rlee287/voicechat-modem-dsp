@@ -11,7 +11,13 @@ def test_unit_bad_datastream_len():
     with pytest.raises(ValueError,match=r".*length"):
         base_4_decode(datastream_singular)
     with pytest.raises(ValueError,match=r".*length"):
+        base_8_decode(datastream_singular)
+    with pytest.raises(ValueError,match=r".*length"):
         base_16_decode(datastream_singular)
+    with pytest.raises(ValueError,match=r".*length"):
+        base_32_decode(datastream_singular)
+    with pytest.raises(ValueError,match=r".*length"):
+        base_64_decode(datastream_singular)
     # Base256 cannot have bad length
 
 def test_unit_bad_datastream():
@@ -21,9 +27,19 @@ def test_unit_bad_datastream():
     with pytest.raises(ValueError,match=r"Illegal symbol.*"):
         base_4_decode(datastream_bad_align)
     with pytest.raises(ValueError,match=r"Illegal symbol.*"):
+        base_8_decode(datastream_bad_align)
+    with pytest.raises(ValueError,match=r"Illegal symbol.*"):
         base_16_decode(datastream_bad_align)
     with pytest.raises(ValueError,match=r"Illegal symbol.*"):
+        base_32_decode(datastream_bad_align)
+    with pytest.raises(ValueError,match=r"Illegal symbol.*"):
+        base_64_decode(datastream_bad_align)
+    with pytest.raises(ValueError,match=r"Illegal symbol.*"):
         base_256_decode(datastream_bad_align)
+
+    datastream_malform_base_8=[7,7,7]
+    with pytest.raises(ValueError):
+        base_8_decode(datastream_malform_base_8)
 
 def test_unit_base_2():
     bitstream=b"\x0f"

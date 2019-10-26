@@ -59,6 +59,14 @@ def test_property_base_4_turnaround():
         data_bitstream_recover=base_4_decode(data_datastream)
         assert bytes(data_bitstream)==data_bitstream_recover
 
+def test_property_base_8_turnaround():
+    for _ in range(64):
+        n=random.randint(1,256)
+        data_bitstream=bytearray((random.getrandbits(8) for _ in range(n)))
+        data_datastream=base_8_encode(data_bitstream)
+        data_bitstream_recover=base_8_decode(data_datastream)
+        assert bytes(data_bitstream)==data_bitstream_recover
+
 def test_unit_base_16():
     bitstream=b"\x01\x23\x45\x67\x89\xab\xcd\xef"
     bitstream_list=list(range(16))
@@ -74,6 +82,22 @@ def test_property_base_16_turnaround():
         data_bitstream=bytearray((random.getrandbits(8) for _ in range(n)))
         data_datastream=base_16_encode(data_bitstream)
         data_bitstream_recover=base_16_decode(data_datastream)
+        assert bytes(data_bitstream)==data_bitstream_recover
+
+def test_property_base_32_turnaround():
+    for _ in range(64):
+        n=random.randint(1,256)
+        data_bitstream=bytearray((random.getrandbits(8) for _ in range(n)))
+        data_datastream=base_32_encode(data_bitstream)
+        data_bitstream_recover=base_32_decode(data_datastream)
+        assert bytes(data_bitstream)==data_bitstream_recover
+
+def test_property_base_64_turnaround():
+    for _ in range(64):
+        n=random.randint(1,256)
+        data_bitstream=bytearray((random.getrandbits(8) for _ in range(n)))
+        data_datastream=base_64_encode(data_bitstream)
+        data_bitstream_recover=base_64_decode(data_datastream)
         assert bytes(data_bitstream)==data_bitstream_recover
 
 def test_unit_base_256():

@@ -8,7 +8,6 @@ from ..bitstream import read_bitstream, write_bitstream
 def hamming_encode_7_4(bitstream):
     output_arr=bytearray(math.ceil(len(bitstream)*7/4))
     output_index=0
-    # TODO: take advantage of neat relationship between 4 and 8 further?
     for i in range(0,8*len(bitstream),4):
         byteindex=i//8
         bitpos=7-i%8
@@ -61,7 +60,6 @@ def hamming_decode_7_4(bitstream):
         bit4_error=(bit4 != bit4_correct)
         # Booleans are integers 0 or 1 so below multiplication works
         error_location=bit1_error+2*bit2_error+4*bit4_error
-        # TODO put bits into a list structure?
         # Correct data bits if wrong but don't bother fixing wrong parity bits
         if error_location==3:
             bit3=not bit3

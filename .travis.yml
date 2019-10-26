@@ -22,9 +22,7 @@ install:
 
 script:
   - sh ./run_tests_coverage.sh
-
-after_success:
-  - if [ $TRAVIS_PYTHON_VERSION = "3.7" ]; then pushd voicechat_modem_dsp; mypy -p encoders -p modulators; popd; fi
+  - if [ $TRAVIS_PYTHON_VERSION = "3.7" ]; then sh ./run_mypy.sh; fi
 
 after_script:
   - wget -O codecov_upload "https://codecov.io/bash"

@@ -10,7 +10,5 @@ protobuf = "*"
 
 [dev-packages]
 pytest = "*"
-mypy = "*"
-
-[requires]
-python_version = "3.7"
+mypy = {version="*", python_version=">='3.5'"}
+coverage = "*"

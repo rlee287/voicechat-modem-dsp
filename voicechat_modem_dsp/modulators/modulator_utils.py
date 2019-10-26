@@ -43,7 +43,7 @@ and makes it truly linear-phase
 
 Based on the technique described in https://www.cypress.com/file/123191/download
 """
-def linearize_fir(filter):
-    frequencies,response=signal.freqz(filter)
+def linearize_fir(fir_filter):
+    frequencies,response=signal.freqz(fir_filter)
     # TODO fill in the rest of this code if this ends up being actually used
     raise NotImplementedError

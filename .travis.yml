@@ -3,12 +3,18 @@ language: python
 notifications:
   email: false
 
+addons:
+  apt:
+    packages:
+    - liblapack-dev
+
 python:
   - "3.8"
   - "3.7"
   - "3.4"
   - "3.6"
   - "3.5"
+
 cache: pip
 
 install:

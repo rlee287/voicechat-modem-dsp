@@ -3,11 +3,20 @@ language: python
 notifications:
   email: false
 
+# Need this for now to build SciPy for Python 3.8
+addons:
+  apt:
+    packages:
+    - liblapack-dev
+
 python:
+  - "3.8"
   - "3.7"
   - "3.4"
+  - "pypy3"
   - "3.6"
   - "3.5"
+
 cache: pip
 
 install:
@@ -22,6 +31,7 @@ install:
 
 script:
   - sh ./run_tests_coverage.sh
+  - if [ $TRAVIS_PYTHON_VERSION = "3.7" ]; then sh ./run_mypy.sh; fi
 
 after_script:
   - wget -O codecov_upload "https://codecov.io/bash"

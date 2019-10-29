@@ -1,5 +1,6 @@
 import random
 
+from voicechat_modem_dsp.encoders.bitstream import *
 from voicechat_modem_dsp.encoders.ecc.hamming_7_4 import *
 
 def test_property_corrupt_hamming_nonmangle():

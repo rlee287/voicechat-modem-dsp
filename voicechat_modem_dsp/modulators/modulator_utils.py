@@ -30,10 +30,10 @@ def fred_harris_fir_tap_count(fs, transition_width, db_attenuation):
 Computes lowpass FIR filter given cutoffs
 Uses the SciPy implementation of the Remez Exchange Algorithm
 """
-def lowpass_fir_filter(dt,cutoff_low,cutoff_high,attenuation=80):
-    tap_count=fred_harris_fir_tap_count(1/dt,cutoff_high-cutoff_low,attenuation)
+def lowpass_fir_filter(fs,cutoff_low,cutoff_high,attenuation=80):
+    tap_count=fred_harris_fir_tap_count(fs,cutoff_high-cutoff_low,attenuation)
     lowpass_filt=signal.remez(tap_count,
-            [0,cutoff_low,cutoff_high,0.5/dt],[1,0],fs=1/dt)
+            [0,cutoff_low,cutoff_high,0.5*fs],[1,0],fs=fs)
     # TODO: remove zeros?
     return lowpass_filt
 

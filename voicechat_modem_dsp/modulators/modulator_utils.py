@@ -1,6 +1,11 @@
 import numpy as np
 from scipy import signal
 
+def generate_timearray(fs, sample_count):
+    dt=1/fs
+    return np.arange(0,dt*sample_count,dt)
+def samples_per_symbol(fs, baud):
+    return fs/baud
 """
 Computes a gaussian smoothing filter given time dt and sigma
 """

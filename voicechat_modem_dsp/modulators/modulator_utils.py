@@ -1,16 +1,26 @@
 import numpy as np
 from scipy import signal
 
+"""
+Computes a time array given a sampling rate and a sample count
+"""
 def generate_timearray(fs, sample_count):
     dt=1/fs
     return np.arange(0,dt*sample_count,dt)
+
+"""
+Computes the number of samples per symbol given a baud and sampling rate
+
+Note: This rate may not be an integer
+"""
 def samples_per_symbol(fs, baud):
     return fs/baud
+
 """
-Computes a gaussian smoothing filter given time dt and sigma
+Computes a gaussian smoothing filter given sampling rate and sigma time
 """
-def compute_gaussian_window(dt, sigma_dt):
-    sigma=sigma_dt/dt
+def compute_gaussian_window(fs, sigma_dt):
+    sigma=sigma_dt*fs
     sample_count=np.ceil(6*sigma+1)
     if sample_count%2==0:
         sample_count+=1

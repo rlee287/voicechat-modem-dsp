@@ -32,6 +32,11 @@ def average_interval_data(data, begin, end):
     if begin<0 or end>(len(data)-1):
         raise ValueError("Invalid index range specified")
     width=end-begin
+    # Handle special case of width=0
+    if width==0:
+        index_int=int(np.floor(begin))
+        index_frac=begin-np.floor(begin)
+        return (1-index_frac)*data[index_int]+index_frac*data[index_int+1]
 
     # Get bounding indicies
     begin_index=int(np.floor(begin))

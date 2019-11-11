@@ -23,6 +23,11 @@ def test_unit_average_int():
     assert average_interval_data(dataseq,1,2)==2.5
     assert average_interval_data(dataseq,2,3)==2.5
 
+def test_unit_average_interp():
+    dataseq=[3,1,0,5]
+    assert np.abs(average_interval_data(dataseq,0.5,0.5)-2)<epsilon
+    assert np.abs(average_interval_data(dataseq,2.8,2.8)-4)<epsilon
+
 def test_unit_average_float():
     dataseq=np.asarray([2,2,2,3,4])
     assert average_interval_data(dataseq,0.5,1.75)==2

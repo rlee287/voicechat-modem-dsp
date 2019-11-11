@@ -35,4 +35,10 @@ def test_unit_average_invalid():
         average_interval_data(dataseq,-1,28.9)
 
 def test_property_average_triangle():
-    pass
+    for _ in range(64):
+        n=random.randint(1,5000)
+        range_data=list(range(n))
+        for _ in range(8):
+            upper_bound=random.randrange(n-1)
+            assert average_interval_data(range_data,
+                    0,upper_bound)==upper_bound/2

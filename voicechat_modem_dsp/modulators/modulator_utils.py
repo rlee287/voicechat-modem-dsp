@@ -6,7 +6,7 @@ Computes a time array given a sampling rate and a sample count
 """
 def generate_timearray(fs, sample_count):
     dt=1/fs
-    return np.arange(0,dt*sample_count,dt)
+    return np.linspace(0,dt*sample_count,sample_count,endpoint=False)
 
 """
 Computes the number of samples per symbol given a baud and sampling rate
@@ -37,7 +37,9 @@ def average_interval_data(data, begin, end):
 
     # Increment begin_index to exclude start element
     # Increment end_index to include second-to-last element but exclude last
-    sum_interval=sum(data[begin_index+1:end_index+1])
+    sum_interval=0
+    if end_index-begin_index>0:
+        sum_interval=sum(data[begin_index+1:end_index+1])
 
     # Compute beginning contribution
     begin_val=(1-begin_frac)**2 * data[begin_index] \
@@ -49,7 +51,7 @@ def average_interval_data(data, begin, end):
     end_val*=0.5
 
     # Add this to the sum and average by dividing out width
-    sum_inverval+=(begin_val+end_val)
+    sum_interval+=(begin_val+end_val)
     return sum_interval/width
 
 

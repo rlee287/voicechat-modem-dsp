@@ -27,31 +27,50 @@ normal average if the bounds are integers. In addition to the 1/2 for endpoints,
 The endpoints are explicitly included here, unlike for normal array slicing.
 """
 def average_interval_data(data, begin, end):
+    if end<begin:
+        raise ValueError("End must be larger than begin")
+    if begin<0 or end>(len(data)-1):
+        raise ValueError("Invalid index range specified")
     width=end-begin
 
     # Get bounding indicies
     begin_index=int(np.floor(begin))
     begin_frac=begin-begin_index
     end_index=int(np.ceil(end))-1
-    end_frac=1-end+np.ceil(end)
+    end_frac=1-(np.ceil(end)-end)
 
-    # Increment begin_index to exclude start element
-    # Increment end_index to include second-to-last element but exclude last
-    sum_interval=0
     if end_index-begin_index>0:
-        sum_interval=sum(data[begin_index+1:end_index+1])
+        if end_index-begin_index==1:
+            # Case 2: two trapezoids with no whole trapezoids in between
+            # Compute the portion of the trapzeoid normally folded into sum
+            # Lump sum does not work because the widths are smaller
+            sum_interval=data[end_index]*(1-begin_frac+end_frac)
+            sum_interval*=0.5
+        else:
+            # Case 3: general trapezoidal integration
+            # Increment begin_index to exclude start element
+            # Increment end_index to include second-to-last element
+            # but exclude last
+            sum_interval=sum(data[begin_index+1:end_index+1])
 
-    # Compute beginning contribution
-    begin_val=(1-begin_frac)**2 * data[begin_index] \
-            + begin_frac*(1-begin_frac)*data[begin_index+1]
-    begin_val*=0.5
-    # Compute ending contribution
-    end_val=end_frac*(1-end_frac)*data[end_index] \
-            + end_frac**2*data[end_index+1]
-    end_val*=0.5
+        # Compute beginning contribution
+        begin_val=(1-begin_frac)**2 * data[begin_index] \
+                + begin_frac*(1-begin_frac)*data[begin_index+1]
+        begin_val*=0.5
+        # Compute ending contribution
+        end_val=end_frac*(1-end_frac)*data[end_index] \
+                + end_frac**2*data[end_index+1]
+        end_val*=0.5
 
-    # Add this to the sum and average by dividing out width
-    sum_interval+=(begin_val+end_val)
+        # Add this to the sum and average by dividing out width
+        sum_interval+=(begin_val+end_val)
+    else:
+        # Case 1: A single trapezoid
+        # begin_index and end_index equal here, but separate for readability
+        sum_interval=(end_frac-begin_frac)* \
+            ((1-begin_frac)*data[begin_index]+begin_frac*data[begin_index+1]+ \
+            (1-end_frac)*data[end_index]+end_frac*data[end_index+1])
+        sum_interval*=0.5
     return sum_interval/width
 
 

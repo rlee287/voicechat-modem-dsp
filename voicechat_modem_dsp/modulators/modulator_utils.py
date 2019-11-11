@@ -17,6 +17,43 @@ def samples_per_symbol(fs, baud):
     return fs/baud
 
 """
+Computes the average of the data over the specified interval with integrals.
+
+The bounds on the given interval need not be integers.
+Trapezoidal interpolation is used the average integral formula.
+
+Note: Due to trapezoidal approximation this will not produce the
+normal average if the bounds are integers. In addition to the 1/2 for endpoints,
+The endpoints are explicitly included here, unlike for normal array slicing.
+"""
+def average_interval_data(data, begin, end):
+    width=end-begin
+
+    # Get bounding indicies
+    begin_index=int(np.floor(begin))
+    begin_frac=begin-begin_index
+    end_index=int(np.ceil(end))-1
+    end_frac=1-end+np.ceil(end)
+
+    # Increment begin_index to exclude start element
+    # Increment end_index to include second-to-last element but exclude last
+    sum_interval=sum(data[begin_index+1:end_index+1])
+
+    # Compute beginning contribution
+    begin_val=(1-begin_frac)**2 * data[begin_index] \
+            + begin_frac*(1-begin_frac)*data[begin_index+1]
+    begin_val*=0.5
+    # Compute ending contribution
+    end_val=end_frac*(1-end_frac)*data[end_index] \
+            + end_frac**2*data[end_index+1]
+    end_val*=0.5
+
+    # Add this to the sum and average by dividing out width
+    sum_inverval+=(begin_val+end_val)
+    return sum_interval/width
+
+
+"""
 Computes a gaussian smoothing filter given sampling rate and sigma time
 """
 def compute_gaussian_window(fs, sigma_dt):

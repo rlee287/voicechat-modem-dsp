@@ -11,7 +11,7 @@ class ASKModulator(Modulator):
                              "using carrier frequency")
         if fs<=2*carrier:
             raise ValueError("Carrier frequency is too high for sampling rate")
-        if any((x>1 or x<0.02 for x in amp_list)):
+        if any((x>1 or x<0.1 for x in amp_list)):
             raise ValueError("Invalid amplitudes given")
         self.fs=fs
         self.amp_list=dict(enumerate(amp_list))

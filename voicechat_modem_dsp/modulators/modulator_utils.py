@@ -17,6 +17,15 @@ def samples_per_symbol(fs, baud):
     return fs/baud
 
 """
+Maps a sequence (assumed to be sampled at baud rate) to a new timesequence
+"""
+def previous_resample_interpolate(timeseq, baud, data):
+    resampled_data=list()
+    for cumulative_time in timeseq:
+        resampled_data.append(data[int(np.floor(cumulative_time*baud))])
+    return resampled_data
+
+"""
 Computes the average of the data over the specified interval with integrals.
 
 The bounds on the given interval need not be integers.

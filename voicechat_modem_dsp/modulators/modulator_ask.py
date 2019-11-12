@@ -20,11 +20,12 @@ class ASKModulator(Modulator):
     def modulate(self, data):
         samples_symbol=modulator_utils.samples_per_symbol(self.fs, self.baud)
 
-        amplitude_data=[0,0]+[amp_list[datum] for datum in data]+[0,0]
-        time_array=Modulator.generate_time_array(self.fs,len(amplitude_data)*samples_symbol)
-        interpolated_amplitude=np.interp(
-            np.linspace(0,int(len(data)*2),len(data),endpoint=False),
-            range(len(amplitude_data)),amplitude_data)
+        amplitude_data=[0]+[amp_list[datum] for datum in data]+[0]
+        time_array=Modulator.generate_time_array(
+            self.fs,len(amplitude_data)*samples_symbol)
+        interpolated_amplitude=modulator_utils.previous_resample_interpolate(
+            time_array, self.baud, amplitude_data)
+        
 
 
     def demodulate(self, time_array, datastream):

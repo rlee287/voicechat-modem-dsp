@@ -11,13 +11,13 @@ def generate_timearray(fs, sample_count):
 """
 Computes the number of samples per symbol given a baud and sampling rate
 
-Note: This rate may not be an integer
+Note: Neither quantity has to be an integer
 """
 def samples_per_symbol(fs, baud):
     return fs/baud
 
 """
-Maps a sequence (assumed to be sampled at baud rate) to a new timesequence
+Maps a sequence (assumed to be sampled at baud rate) to a timesequence
 """
 def previous_resample_interpolate(timeseq, baud, data):
     resampled_data=list()
@@ -29,11 +29,13 @@ def previous_resample_interpolate(timeseq, baud, data):
 Computes the average of the data over the specified interval with integrals.
 
 The bounds on the given interval need not be integers.
-Trapezoidal interpolation is used the average integral formula.
+Linear interpolation is used the average integral formula.
 
 Note: Due to trapezoidal approximation this will not produce the
-normal average if the bounds are integers. In addition to the 1/2 for endpoints,
-The endpoints are explicitly included here, unlike for normal array slicing.
+normal average if the bounds are integers.
+Both endpoints are explicitly included, unlike normal array slicing.
+In addition, the values at the extremities receive half the weight
+as the rest of the data, following the trapezoidal integraion formula.
 """
 def average_interval_data(data, begin, end):
     if end<begin:
@@ -126,7 +128,7 @@ def lowpass_fir_filter(fs,cutoff_low,cutoff_high,attenuation=80):
 
 """
 Helper function that takes symmetric "linear-phase" FIR filter
-and makes it truly linear-phase
+and makes it truly linear-phase by removing zeros
 
 Based on the technique described in https://www.cypress.com/file/123191/download
 """

@@ -10,5 +10,10 @@ protobuf = "*"
 
 [dev-packages]
 pytest = "*"
-mypy = {version="*", python_version=">='3.5'"}
 coverage = "*"
+sphinx = "*"
+nbsphinx = "*"
+
+[dev-packages.mypy]
+version = "*"
+python_version = ">='3.5'"

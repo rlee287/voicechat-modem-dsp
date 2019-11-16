@@ -29,13 +29,15 @@ def previous_resample_interpolate(timeseq, baud, data):
 Computes the average of the data over the specified interval with integrals.
 
 The bounds on the given interval need not be integers.
-Linear interpolation is used the average integral formula.
+Linear interpolation is used for noninteger bounds.
+
+See "Trapezoidal Averaging.ipynb" for derivations of these formulas.
 
 Note: Due to trapezoidal approximation this will not produce the
 normal average if the bounds are integers.
 Both endpoints are explicitly included, unlike normal array slicing.
 In addition, the values at the extremities receive half the weight
-as the rest of the data, following the trapezoidal integraion formula.
+as the rest of the data, following the trapezoidal integration formula.
 """
 def average_interval_data(data, begin, end):
     if end<begin:

@@ -10,7 +10,7 @@ Welcome to Voicechat Modem (DSP Component)'s documentation!
    :maxdepth: 2
    :caption: Contents:
 
-
+   notebooks/Trapezoidal Averaging
 
 Indices and tables
 ==================
@@ -18,3 +18,4 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+

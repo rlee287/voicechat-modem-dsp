@@ -22,7 +22,6 @@ class ASKModulator(Modulator):
         samples_symbol=modulator_utils.samples_per_symbol(self.fs, self.baud)
         #sigma_t = w/4k, explain later
         gaussian_sigma=(1/self.baud)/(4*2.5)
-        print(gaussian_sigma)
         gaussian_window=modulator_utils.compute_gaussian_window(self.fs,gaussian_sigma)
 
         amplitude_data=[0]+[self.amp_list[datum] for datum in data]+[0]

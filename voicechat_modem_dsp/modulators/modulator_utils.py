@@ -100,7 +100,9 @@ def compute_gaussian_window(fs, sigma_dt):
     sample_count=np.ceil(6*sigma+1)
     if sample_count%2==0:
         sample_count+=1
-    return signal.windows.gaussian(sample_count, sigma)
+    raw_window=signal.windows.gaussian(sample_count, sigma)
+    raw_window_sum=np.sum(raw_window)
+    return raw_window/raw_window_sum
 
 
 """

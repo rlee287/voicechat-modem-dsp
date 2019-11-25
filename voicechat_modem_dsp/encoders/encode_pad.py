@@ -114,7 +114,7 @@ def base_16_decode(datastream):
         # Should only require a single hex digit
         if c<0 or hex(c)[-2]!="x":
             raise ValueError("Illegal symbol detected in datastream")
-    return base64.b16decode(bytearray("".join([hex(c)[-1] for c in datastream]),
+    return base64.b16decode(bytes("".join([hex(c)[-1] for c in datastream]),
                             "ascii"),casefold=True)
 
 def base_32_encode(bitstream):

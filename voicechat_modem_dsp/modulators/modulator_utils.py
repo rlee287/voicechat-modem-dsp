@@ -1,5 +1,6 @@
 import numpy as np
 from scipy import signal
+from scipy.interpolate import interp1d
 
 """
 Computes a time array given a sampling rate and a sample count
@@ -20,10 +21,9 @@ def samples_per_symbol(fs, baud):
 Maps a sequence (assumed to be sampled at baud rate) to a timesequence
 """
 def previous_resample_interpolate(timeseq, baud, data):
-    resampled_data=list()
-    for cumulative_time in timeseq:
-        resampled_data.append(data[int(np.floor(cumulative_time*baud))])
-    return resampled_data
+    interp_func=interp1d(range(len(data)),data,
+        kind="previous",copy=False,bounds_error=False,fill_value=0.0)
+    return interp_func(timeseq*baud)
 
 """
 Computes the average of the data over the specified interval with integrals.

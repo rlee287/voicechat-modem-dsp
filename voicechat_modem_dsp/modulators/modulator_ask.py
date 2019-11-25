@@ -3,6 +3,7 @@ from .modulator_base import Modulator
 from . import modulator_utils
 
 import numpy as np
+from scipy import signal
 
 class ASKModulator(Modulator):
     def __init__(self, fs, carrier, amp_list, baud):
@@ -23,16 +24,17 @@ class ASKModulator(Modulator):
         #sigma_t = w/4k, explain later
         gaussian_sigma=(1/self.baud)/(4*2.5)
         gaussian_window=modulator_utils.compute_gaussian_window(self.fs,gaussian_sigma)
+        amplitude_data = \
+            np.pad([self.amp_list[datum] for datum in data],1,constant_values=0)
 
-        amplitude_data=[0]+[self.amp_list[datum] for datum in data]+[0]
         interp_sample_count=np.ceil(len(amplitude_data)*samples_symbol)
         time_array=modulator_utils.generate_timearray(
             self.fs,interp_sample_count)
 
         interpolated_amplitude=modulator_utils.previous_resample_interpolate(
             time_array, self.baud, amplitude_data)
-        shaped_amplitude=np.convolve(interpolated_amplitude,gaussian_window,
-            "same")
+        shaped_amplitude=signal.convolve(interpolated_amplitude,gaussian_window,
+            "same",method="fft")
 
         return (time_array,shaped_amplitude * \
             np.sin(2*np.pi*self.carrier_freq*time_array))

@@ -176,21 +176,6 @@ def base_256_decode(datastream):
     except ValueError:
         raise ValueError("Illegal symbol detected in datastream")
 
-# Deliberately use NaN here for NumPy propagation later
-def make_pad_array(datastream, pad_len):
-    list_ret=[float("nan")]*pad_len
-    list_ret+=list(datastream)
-    list_ret+=[float("nan")]+pad_len
-    return list_ret
-
-def unpad_array(datastream):
-    list_ret=datastream.copy()
-    while list_ret[0]==float("nan"):
-        del list_ret[0]
-    while list_ret[-1]==float("nan"):
-        del list_ret[-1]
-    return list_ret
-
 # Convenience mapping to allow for lookup based on len(modulation_list)
 encode_function_mappings = {2:base_2_encode, 4:base_4_encode,
                             8:base_8_encode, 16:base_16_encode,

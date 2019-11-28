@@ -6,6 +6,11 @@ import numpy as np
 from scipy import signal
 
 class ASKModulator(Modulator):
+    # norm.isf(1/(2^8))
+    sigma_mult_t=2.66
+    # norm.isf(0.0001)
+    sigma_mult_f=3.72
+
     def __init__(self, fs, carrier, amp_list, baud):
         if baud>=0.5*carrier:
             raise ValueError("Baud is too high to be modulated "+
@@ -19,13 +24,20 @@ class ASKModulator(Modulator):
         self.carrier_freq=carrier
         self.baud=baud
     
+    def _calculate_sigma(self):
+        #sigma_t = w/4k, explain later
+        gaussian_sigma_t=(1/self.baud)/(4*ASKModulator.sigma_mult_t)
+        #Ensure dropoff at carrier frequency is -80dB
+        gaussian_sigma_f=ASKModulator.sigma_mult_f/(2*np.pi*self.carrier_freq)
+        return min(gaussian_sigma_t,gaussian_sigma_f)
+    
     def modulate(self, data):
         samples_symbol=modulator_utils.samples_per_symbol(self.fs, self.baud)
-        #sigma_t = w/4k, explain later
-        gaussian_sigma=(1/self.baud)/(4*2.5)
+
+        gaussian_sigma=self._calculate_sigma()
         gaussian_window=modulator_utils.compute_gaussian_window(self.fs,gaussian_sigma)
-        amplitude_data = \
-            np.pad([self.amp_list[datum] for datum in data],1,constant_values=0)
+        amplitude_data = np.pad([self.amp_list[datum] for datum in data],
+            1,constant_values=0)
 
         interp_sample_count=np.ceil(len(amplitude_data)*samples_symbol)
         time_array=modulator_utils.generate_timearray(

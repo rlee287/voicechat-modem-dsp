@@ -95,7 +95,7 @@ def average_interval_data(data, begin, end):
 """
 Computes a gaussian smoothing filter given sampling rate and sigma time
 """
-def compute_gaussian_window(fs, sigma_dt):
+def gaussian_window(fs, sigma_dt):
     sigma=sigma_dt*fs
     sample_count=np.ceil(6*sigma+1)
     if sample_count%2==0:

@@ -4,6 +4,7 @@ from . import modulator_utils
 
 import numpy as np
 from scipy import signal
+from scipy.cluster.vq import vq
 
 class ASKModulator(Modulator):
     # norm.isf(1/(2*2^8))
@@ -32,7 +33,7 @@ class ASKModulator(Modulator):
         #Ensure dropoff at carrier frequency is -80dB
         gaussian_sigma_f=ASKModulator.sigma_mult_f/(2*np.pi*self.carrier_freq)
         return min(gaussian_sigma_t,gaussian_sigma_f)
-    
+
     @property
     def _samples_per_symbol(self):
         return modulator_utils.samples_per_symbol(self.fs,self.baud)
@@ -70,8 +71,34 @@ class ASKModulator(Modulator):
 
         fir_filt=modulator_utils.lowpass_fir_filter(self.fs, filter_lowend, filter_highend)
         filt_delay=(len(fir_filt)-1)//2
-        interval_indexing=filt_delay
-        while interval_indexing+self._samples_per_symbol<=(len(modulated_data)-1):
-            pass #stuff
-        filtered_demod_amplitude=signal.lfilter(fir_filt,1,demod_amplitude)
-        return np.abs(filtered_demod_amplitude)
+
+        filtered_demod_amplitude=np.abs(signal.lfilter(fir_filt,1,demod_amplitude))
+
+        # Round to account for floating point weirdness
+        interval_count=int(np.round(
+            len(modulated_data)/self._samples_per_symbol))
+        interval_offset=filt_delay
+        list_amplitudes=list()
+        for i in range(interval_count):
+            transition_width=ASKModulator.sigma_mult_t*self._calculate_sigma
+            # Convert above time width into sample width
+            transition_width*=self.fs
+
+            interval_begin=interval_offset+i*self._samples_per_symbol
+            # Perform min in order to account for floating point weirdness
+            interval_end=min(interval_begin+self._samples_per_symbol,
+                len(modulated_data)-1)
+
+            interval_begin+=transition_width
+            interval_end-=transition_width
+            list_amplitudes.append(modulator_utils.average_interval_data(filtered_demod_amplitude, interval_begin, interval_end))
+
+        list_amplitudes=[[amplitude] for amplitude in list_amplitudes]
+        code_book=[self.amp_list[i] for i in range(len(self.amp_list))]
+        code_book.insert(0,0.0)
+        code_book=[[obs] for obs in code_book]
+
+        vector_cluster=vq(list_amplitudes,code_book,False)
+        # Subtract data points by 1 and remove 0 symbol
+        datastream=vector_cluster[0]-1
+        return datastream[1:-1]

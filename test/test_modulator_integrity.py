@@ -62,6 +62,6 @@ def test_property_ask_integrity():
         modulator=ASKModulator(sampling_freq,carrier_freq,amplitude_list,baud_rate)
         modulated_data=modulator.modulate(datastream)
         demodulated_datastream=modulator.demodulate(modulated_data)
-        recovered_bistream=base_16_decode(demodulated_datastream)
+        recovered_bitstream=base_16_decode(demodulated_datastream)
 
-        assert bitstream==recovered_bistream
+        assert bitstream==recovered_bitstream

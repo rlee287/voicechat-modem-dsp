@@ -49,7 +49,8 @@ class ASKModulator(Modulator):
             1,mode="constant",constant_values=0)
 
         # Upsample amplitude to actual sampling rate
-        interp_sample_count=np.ceil(len(amplitude_data)*self._samples_per_symbol)
+        interp_sample_count=int(np.ceil(
+            len(amplitude_data)*self._samples_per_symbol))
         time_array=modulator_utils.generate_timearray(
             self.fs,interp_sample_count)
         interpolated_amplitude=modulator_utils.previous_resample_interpolate(

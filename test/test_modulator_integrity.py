@@ -11,7 +11,6 @@ def get_rand_float(lower, upper):
 
 def test_unit_ask_integrity_novoice():
     amplitude_list=list(np.geomspace(0.1,1,16))
-    # Shuffle as opposed to complete random to test all 0x00-0xff
     list_data=list(range(256))
     bitstream=bytes(list_data)
     datastream=base_16_encode(bitstream)

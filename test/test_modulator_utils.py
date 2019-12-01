@@ -39,6 +39,22 @@ def test_unit_average_invalid():
     with pytest.raises(ValueError, match=r"Invalid index.*"):
         average_interval_data(dataseq,-1,28.9)
 
+def test_property_average_constant():
+    for _ in range(256):
+        n=random.randint(1,5000)
+        const_val=random.random()
+        list_constant=[const_val]*n
+        for _ in range(16):
+            lower_bound=random.random()*n
+            upper_bound=random.random()*n
+            if upper_bound<lower_bound:
+                temp=lower_bound
+                lower_bound=upper_bound
+                upper_bound=temp
+            average=average_interval_data(list_constant,
+                    lower_bound,upper_bound)
+            assert np.abs(average-const_val)<epsilon
+
 def test_property_average_triangle():
     for _ in range(256):
         n=random.randint(2,5000)

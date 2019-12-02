@@ -48,15 +48,18 @@ def average_interval_data(data, begin, end):
     if width==0:
         index_int=int(np.floor(begin))
         index_frac=begin-np.floor(begin)
-        return (1-index_frac)*data[index_int]+index_frac*data[index_int+1]
+        if index_int==len(data)-1:
+            return data[index_int]
+        else:
+            return (1-index_frac)*data[index_int]+index_frac*data[index_int+1]
 
-    # Calculate linear interpolation for beginning point
+    # Calculate linear interpolation for endpoints
+    # Handle special cases where endpoints are end to avoid indexing errors
+    # Do not do this for begin as width==0 would have taken care of that already
     begin_int=int(np.floor(begin))
     begin_frac=begin-np.floor(begin_int)
     begin_lininterp=(1-begin_frac)*data[begin_int]+begin_frac*data[begin_int+1]
 
-    # Calculate linear interpolation for end point
-    # Handle special case where end is actually end to avoid indexing errors
     if end==len(data)-1:
         end_lininterp=data[end]
     else:

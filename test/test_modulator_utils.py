@@ -32,6 +32,10 @@ def test_unit_average_float():
     dataseq=np.asarray([2,2,2,3,4])
     assert average_interval_data(dataseq,0.5,1.75)==2
 
+def test_unit_average_single():
+    dataseq=np.asarray([1])
+    assert average_interval_data(dataseq,0,0)==1
+
 def test_unit_average_invalid():
     dataseq=[4,1,3,6,1,2,10,2,5]
     with pytest.raises(ValueError, match=r".*must be larger than.*"):

@@ -40,7 +40,7 @@ def test_unit_average_invalid():
         average_interval_data(dataseq,-1,28.9)
 
 def test_property_average_constant():
-    for _ in range(256):
+    for _ in range(1024):
         n=random.randint(1,5000)
         const_val=random.random()
         list_constant=[const_val]*n

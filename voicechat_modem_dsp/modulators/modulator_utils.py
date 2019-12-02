@@ -31,14 +31,13 @@ Computes the average of the data over the specified interval with integrals.
 The bounds on the given interval need not be integers.
 Linear interpolation is used for noninteger bounds.
 
-See "Trapezoidal Averaging.ipynb" for derivations of these formulas.
-
 Note: Due to trapezoidal approximation this will not produce the
 normal average if the bounds are integers.
 Both endpoints are explicitly included, unlike normal array slicing.
 In addition, the values at the extremities receive half the weight
 as the rest of the data, following the trapezoidal integration formula.
 """
+
 def average_interval_data(data, begin, end):
     if end<begin:
         raise ValueError("End must be larger than begin")
@@ -51,46 +50,28 @@ def average_interval_data(data, begin, end):
         index_frac=begin-np.floor(begin)
         return (1-index_frac)*data[index_int]+index_frac*data[index_int+1]
 
-    # Get bounding indicies
-    begin_index=int(np.floor(begin))
-    begin_frac=begin-begin_index
-    end_index=int(np.ceil(end))-1
-    end_frac=1-(np.ceil(end)-end)
+    # Calculate linear interpolation for beginning point
+    begin_int=int(np.floor(begin))
+    begin_frac=begin-np.floor(begin_int)
+    begin_lininterp=(1-begin_frac)*data[begin_int]+begin_frac*data[begin_int+1]
 
-    if end_index-begin_index>0:
-        if end_index-begin_index==1:
-            # Case 2: two trapezoids with no whole trapezoids in between
-            # Compute the portion of the trapzeoid normally folded into sum
-            # Lump sum does not work because the widths are smaller
-            sum_interval=data[end_index]*(1-begin_frac+end_frac)
-            sum_interval*=0.5
-        else:
-            # Case 3: general trapezoidal integration
-            # Increment begin_index to exclude start element
-            # Increment end_index to include second-to-last element
-            # but exclude last
-            sum_interval=sum(data[begin_index+1:end_index+1])
-
-        # Compute beginning contribution
-        begin_val=(1-begin_frac)**2 * data[begin_index] \
-                + begin_frac*(1-begin_frac)*data[begin_index+1]
-        begin_val*=0.5
-        # Compute ending contribution
-        end_val=end_frac*(1-end_frac)*data[end_index] \
-                + end_frac**2*data[end_index+1]
-        end_val*=0.5
-
-        # Add this to the sum and average by dividing out width
-        sum_interval+=(begin_val+end_val)
+    # Calculate linear interpolation for end point
+    # Handle special case where end is actually end to avoid indexing errors
+    if end==len(data)-1:
+        end_lininterp=data[end]
     else:
-        # Case 1: A single trapezoid
-        # begin_index and end_index equal here, but separate for readability
-        sum_interval=(end_frac-begin_frac)* \
-            ((1-begin_frac)*data[begin_index]+begin_frac*data[begin_index+1]+ \
-            (1-end_frac)*data[end_index]+end_frac*data[end_index+1])
-        sum_interval*=0.5
-    return sum_interval/width
+        end_int=int(np.floor(end))
+        end_frac=end-np.floor(end)
+        end_lininterp=(1-end_frac)*data[end_int]+end_frac*data[end_int+1]
 
+    # Construct input to numpy.trapz
+    x_array=list(range(int(np.ceil(begin)),int(np.floor(end))+1))
+    x_array=np.asarray([begin]+x_array+[end])
+
+    y_array=[data[i] for i in range(int(np.ceil(begin)),int(np.floor(end))+1)]
+    y_array=np.asarray([begin_lininterp]+y_array+[end_lininterp])
+
+    return np.trapz(y_array,x_array)/width
 
 """
 Computes a gaussian smoothing filter given sampling rate and sigma time

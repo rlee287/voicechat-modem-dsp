@@ -45,8 +45,8 @@ def test_property_average_constant():
         const_val=random.random()
         list_constant=[const_val]*n
         for _ in range(16):
-            lower_bound=random.random()*n
-            upper_bound=random.random()*n
+            lower_bound=random.random()*(n-1)
+            upper_bound=random.random()*(n-1)
             if upper_bound<lower_bound:
                 temp=lower_bound
                 lower_bound=upper_bound

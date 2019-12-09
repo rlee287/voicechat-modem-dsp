@@ -3,6 +3,12 @@ from scipy import signal
 from scipy.interpolate import interp1d
 
 """
+Warning to be raised when modulators cannot guarantee data accuracy
+"""
+class ModulationIntegrityWarning(UserWarning):
+    pass
+
+"""
 Computes a time array given a sampling rate and a sample count
 """
 def generate_timearray(fs, sample_count):

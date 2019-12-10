@@ -44,7 +44,7 @@ def test_unit_average_invalid():
         average_interval_data(dataseq,-1,28.9)
 
 def test_property_average_constant():
-    for _ in range(256):
+    for _ in range(64):
         n=random.randint(1,5000)
         const_val=random.random()
         list_constant=[const_val]*n
@@ -60,7 +60,7 @@ def test_property_average_constant():
             assert np.abs(average-const_val)<epsilon
 
 def test_property_average_triangle():
-    for _ in range(256):
+    for _ in range(64):
         n=random.randint(2,5000)
         range_data=list(range(n))
         for _ in range(16):

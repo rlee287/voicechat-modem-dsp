@@ -68,7 +68,7 @@ def test_property_ask_integrity():
                 continue
 
         modulated_data=modulator.modulate(datastream)
-        modulator.demodulate(modulated_data, True)
+        modulator.demodulate(modulated_data)
         demodulated_bundle=modulator.demodulate(modulated_data)
         recovered_bitstream=base_16_decode(demodulated_bundle)
         count_run+=1

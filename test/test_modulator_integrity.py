@@ -11,6 +11,7 @@ import pytest
 def get_rand_float(lower, upper):
     return random.random()*(upper-lower)+lower
 
+@pytest.mark.unit
 def test_unit_ask_integrity_novoice():
     amplitude_list=list(np.geomspace(0.1,1,16))
     list_data=list(range(256))
@@ -28,6 +29,7 @@ def test_unit_ask_integrity_novoice():
 
     assert bitstream==recovered_bitstream
 
+@pytest.mark.unit
 def test_unit_ask_integrity_voice():
     amplitude_list=list(np.geomspace(0.1,1,16))
     # Shuffle as opposed to complete random to test all 0x00-0xff
@@ -46,6 +48,7 @@ def test_unit_ask_integrity_voice():
 
     assert bitstream==recovered_bitstream
 
+@pytest.mark.property
 def test_property_ask_integrity():
     amplitude_list=list(np.linspace(0.1,1,16))
     count_run=0

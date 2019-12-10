@@ -7,6 +7,7 @@ from voicechat_modem_dsp.modulators.modulator_utils import *
 
 epsilon=1e-14
 
+@pytest.mark.property
 def test_property_generate_timearray():
     for _ in range(256):
         n=random.randint(1,50000)
@@ -15,6 +16,7 @@ def test_property_generate_timearray():
         assert all(np.abs(np.diff(timearr)-1/n) < epsilon)
         assert np.abs(timearr[-1]-1) < epsilon
 
+@pytest.mark.unit
 def test_unit_average_int():
     dataseq=np.asarray([1,1,4,1])
     assert average_interval_data(dataseq,0,3)==2
@@ -23,19 +25,23 @@ def test_unit_average_int():
     assert average_interval_data(dataseq,1,2)==2.5
     assert average_interval_data(dataseq,2,3)==2.5
 
+@pytest.mark.unit
 def test_unit_average_interp():
     dataseq=[3,1,0,5]
     assert np.abs(average_interval_data(dataseq,0.5,0.5)-2)<epsilon
     assert np.abs(average_interval_data(dataseq,2.8,2.8)-4)<epsilon
 
+@pytest.mark.unit
 def test_unit_average_float():
     dataseq=np.asarray([2,2,2,3,4])
     assert average_interval_data(dataseq,0.5,1.75)==2
 
+@pytest.mark.unit
 def test_unit_average_single():
     dataseq=np.asarray([1])
     assert average_interval_data(dataseq,0,0)==1
 
+@pytest.mark.unit
 def test_unit_average_invalid():
     dataseq=[4,1,3,6,1,2,10,2,5]
     with pytest.raises(ValueError, match=r".*must be larger than.*"):
@@ -43,6 +49,7 @@ def test_unit_average_invalid():
     with pytest.raises(ValueError, match=r"Invalid index.*"):
         average_interval_data(dataseq,-1,28.9)
 
+@pytest.mark.property
 def test_property_average_constant():
     for _ in range(64):
         n=random.randint(1,5000)
@@ -59,6 +66,7 @@ def test_property_average_constant():
                     lower_bound,upper_bound)
             assert np.abs(average-const_val)<epsilon
 
+@pytest.mark.property
 def test_property_average_triangle():
     for _ in range(64):
         n=random.randint(2,5000)

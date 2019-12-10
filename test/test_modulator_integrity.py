@@ -1,8 +1,10 @@
 import random
+import warnings
 import numpy as np
 
 from voicechat_modem_dsp.encoders.encode_pad import *
 from voicechat_modem_dsp.modulators.modulator_ask import ASKModulator
+from voicechat_modem_dsp.modulators.modulator_utils import ModulationIntegrityWarning
 
 import pytest
 
@@ -44,10 +46,10 @@ def test_unit_ask_integrity_voice():
 
     assert bitstream==recovered_bitstream
 
-@pytest.mark.skip(reason="Need to manually check behavior with pathological inputs")
 def test_property_ask_integrity():
-    amplitude_list=list(np.geomspace(0.1,1,16))
-    for _ in range(4):
+    amplitude_list=list(np.linspace(0.1,1,16))
+    count_run=0
+    while count_run<256:
         # Shuffle as opposed to complete random to test all 0x00-0xff
         list_data=list(range(256))
         random.shuffle(list_data)
@@ -55,12 +57,20 @@ def test_property_ask_integrity():
         datastream=base_16_encode(bitstream)
 
         sampling_freq=get_rand_float(8000,48000)
-        carrier_freq=get_rand_float(100,0.5*sampling_freq)
-        baud_rate=get_rand_float(50,0.5*carrier_freq)
+        carrier_freq=get_rand_float(256,sampling_freq/3)
+        baud_rate=get_rand_float(128,carrier_freq/4)
 
-        modulator=ASKModulator(sampling_freq,carrier_freq,amplitude_list,baud_rate)
+        with warnings.catch_warnings():
+            try:
+                modulator=ASKModulator(sampling_freq,
+                    carrier_freq,amplitude_list,baud_rate)
+            except ModulationIntegrityWarning:
+                continue
+
         modulated_data=modulator.modulate(datastream)
-        demodulated_datastream=modulator.demodulate(modulated_data)
-        recovered_bitstream=base_16_decode(demodulated_datastream)
+        modulator.demodulate(modulated_data, True)
+        demodulated_bundle=modulator.demodulate(modulated_data)
+        recovered_bitstream=base_16_decode(demodulated_bundle)
+        count_run+=1
 
         assert bitstream==recovered_bitstream

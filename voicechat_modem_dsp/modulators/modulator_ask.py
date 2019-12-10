@@ -1,10 +1,13 @@
 from .modulator_base import Modulator
 
 from . import modulator_utils
+from .modulator_utils import ModulationIntegrityWarning
 
 import numpy as np
 from scipy import signal
 from scipy.cluster.vq import vq
+
+import warnings
 
 class ASKModulator(Modulator):
     # norm.isf(1/(2*2^8))
@@ -16,8 +19,8 @@ class ASKModulator(Modulator):
         if baud>=0.5*carrier:
             raise ValueError("Baud is too high to be modulated "+
                              "using carrier frequency")
-        # TODO: set tighter bounds because of 2*carrier?
-        if fs<=2*carrier:
+        # Nyquist limit
+        if carrier>=0.5*fs:
             raise ValueError("Carrier frequency is too high for sampling rate")
         if any((x>1 or x<0.1 for x in amp_list)):
             raise ValueError("Invalid amplitudes given")
@@ -25,10 +28,16 @@ class ASKModulator(Modulator):
         self.amp_list=dict(enumerate(amp_list))
         self.carrier_freq=carrier
         self.baud=baud
+        # Nyquist aliased 2*carrier=carrier
+        if carrier>=(1/3)*fs:
+            warnings.warn("Carrier frequency is too high to guarantee"
+                          "proper lowpass reconstruction",
+                          ModulationIntegrityWarning)
+        # TODO: additional warnings relating to filter overshoot and the like
     
     @property
     def _calculate_sigma(self):
-        #sigma_t = w/4k, explain later
+        #sigma_t = w/4k, at most half of the pulse is smoothed away
         gaussian_sigma_t=(1/self.baud)/(4*ASKModulator.sigma_mult_t)
         #Ensure dropoff at carrier frequency is -80dB
         gaussian_sigma_f=ASKModulator.sigma_mult_f/(2*np.pi*self.carrier_freq)
@@ -72,7 +81,7 @@ class ASKModulator(Modulator):
 
         # Compute filter boundaries
         # Lowend is half the baud (i.e. the fundamental of the data)
-        # Highend blocks fundamental and optionally voice
+        # Highend blocks fundamental of data and optionally voice
         # TODO: improve this part
         carrier_refl=min(2*self.carrier_freq,self.fs-2*self.carrier_freq)
         filter_lowend=0.5*self.baud
@@ -93,6 +102,7 @@ class ASKModulator(Modulator):
             len(modulated_data)/self._samples_per_symbol))
         interval_offset=filt_delay
         list_amplitudes=list()
+
         for i in range(interval_count):
             transition_width=ASKModulator.sigma_mult_t*self._calculate_sigma
             # Convert above time width into sample point width
@@ -104,11 +114,15 @@ class ASKModulator(Modulator):
                 len(modulated_data)-1)
 
             # Shrink interval by previously calculated transition width
-            interval_begin+=transition_width
-            interval_end-=transition_width
+            # Skip doing so for first and last sample
+            if i!=0:
+                interval_begin+=transition_width
+            if i!=interval_count-1:
+                interval_end-=transition_width
             # Find the amplitude by averaging
             list_amplitudes.append(modulator_utils.average_interval_data(filtered_demod_amplitude, interval_begin, interval_end))
 
+        list_amplitudes_copy=list_amplitudes.copy()
         # Convert amplitude observations and mapping into vq arguments
         # Insert the null symbol 0 to account for beginning and end
         list_amplitudes=[[amplitude] for amplitude in list_amplitudes]
@@ -117,7 +131,7 @@ class ASKModulator(Modulator):
         code_book=[[obs] for obs in code_book]
 
         # Map averages to amplitude points
-        vector_cluster=vq(list_amplitudes,code_book,False)
+        vector_cluster=vq(list_amplitudes,code_book)
         # Subtract data points by 1 and remove 0 padding
         # Neat side effect: -1 is an invalid data point
         datastream=vector_cluster[0]-1

@@ -39,8 +39,12 @@ class ASKModulator(Modulator):
     def _calculate_sigma(self):
         #sigma_t = w/4k, at most half of the pulse is smoothed away
         gaussian_sigma_t=(1/self.baud)/(4*ASKModulator.sigma_mult_t)
-        #Ensure dropoff at carrier frequency is -80dB
-        gaussian_sigma_f=ASKModulator.sigma_mult_f/(2*np.pi*self.carrier_freq)
+        # Ensure dropoff at halfway to doubled carrier frequency is -80dB
+        # This is not the same as carrier_freq because Nyquist reflections
+        doubled_carrier_refl=min(
+            2*self.carrier_freq,self.fs-2*self.carrier_freq)
+        halfway_thresh=0.5*doubled_carrier_refl
+        gaussian_sigma_f=ASKModulator.sigma_mult_f/(2*np.pi*halfway_thresh)
         return min(gaussian_sigma_t,gaussian_sigma_f)
 
     # Expose modulator_utils calculation here as OOP read-only property

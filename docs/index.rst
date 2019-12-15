@@ -11,6 +11,7 @@ Welcome to Voicechat Modem (DSP Component)'s documentation!
    :caption: Contents:
 
    notebooks/Trapezoidal Averaging
+   notebooks/Pre-Modulation Gaussian Smoothing
 
 Indices and tables
 ==================

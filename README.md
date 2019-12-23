@@ -1,6 +1,6 @@
 # voicechat-modem-dsp
 
-[![Build Status](https://travis-ci.org/rlee287/voicechat-modem-dsp.svg?branch=master)](https://travis-ci.org/rlee287/voicechat-modem-dsp) 
+[![Build Status](https://travis-ci.com/rlee287/voicechat-modem-dsp.svg?branch=master)](https://travis-ci.com/rlee287/voicechat-modem-dsp) 
 [![codecov](https://codecov.io/gh/rlee287/voicechat-modem-dsp/branch/master/graph/badge.svg)](https://codecov.io/gh/rlee287/voicechat-modem-dsp)
 [![CodeFactor](https://www.codefactor.io/repository/github/rlee287/voicechat-modem-dsp/badge)](https://www.codefactor.io/repository/github/rlee287/voicechat-modem-dsp)
 

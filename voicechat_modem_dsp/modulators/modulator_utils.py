@@ -116,6 +116,9 @@ Uses scipy.signal.firls for Least Squares FIR Filter Design
 def lowpass_fir_filter(fs,cutoff_low,cutoff_high,attenuation=80):
     if cutoff_low>=cutoff_high:
         raise ValueError("High cutoff must be larger than low cutoff")
+    if cutoff_low>=0.5*fs or cutoff_high>=0.5*fs:
+        raise ValueError("Cutoffs must be lower than Nyquist limit")
+
     tap_count=fred_harris_fir_tap_count(fs,cutoff_high-cutoff_low,attenuation)
 
     # Remez would sometimes return NaN arrays as filters

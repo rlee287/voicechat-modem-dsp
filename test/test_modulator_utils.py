@@ -21,7 +21,7 @@ def test_filtergen_error():
     with pytest.raises(ValueError):
         filt=lowpass_fir_filter(2000,500,100)
     with pytest.raises(ValueError):
-        filt=lowpass_fir_filter(2000,5000,1000)
+        filt=lowpass_fir_filter(2000,1000,4000)
 
 @pytest.mark.unit
 def test_unit_average_int():

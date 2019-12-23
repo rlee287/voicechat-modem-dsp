@@ -17,6 +17,13 @@ def test_property_generate_timearray():
         assert np.abs(timearr[-1]-1) < epsilon
 
 @pytest.mark.unit
+def test_filtergen_error():
+    with pytest.raises(ValueError):
+        filt=lowpass_fir_filter(2000,500,100)
+    with pytest.raises(ValueError):
+        filt=lowpass_fir_filter(2000,5000,1000)
+
+@pytest.mark.unit
 def test_unit_average_int():
     dataseq=np.asarray([1,1,4,1])
     assert average_interval_data(dataseq,0,3)==2

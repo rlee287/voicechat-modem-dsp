@@ -22,16 +22,25 @@ class ASKModulator(Modulator):
         # Nyquist limit
         if carrier>=0.5*fs:
             raise ValueError("Carrier frequency is too high for sampling rate")
-        if any((x>1 or x<0.1 for x in amp_list)):
+        if any((x>1 or x<=0 for x in amp_list)):
             raise ValueError("Invalid amplitudes given")
+
         self.fs=fs
         self.amp_list=dict(enumerate(amp_list))
         self.carrier_freq=carrier
         self.baud=baud
         # Nyquist aliased 2*carrier=carrier
         if carrier>=(1/3)*fs:
-            warnings.warn("Carrier frequency is too high to guarantee"
+            warnings.warn("Carrier frequency is too high to guarantee "
                           "proper lowpass reconstruction",
+                          ModulationIntegrityWarning)
+        if any(x<0.1 for x in amp_list):
+            warnings.warn("Some amplitudes may be too low "
+                          "to be distinguishable from background noise",
+                          ModulationIntegrityWarning)
+        if any(dx<=0.05 for dx in np.diff(amp_list)):
+            warnings.warn("Some amplitudes may be too close "
+                          "to be distinguishable from each other",
                           ModulationIntegrityWarning)
         # TODO: additional warnings relating to filter overshoot and the like
     

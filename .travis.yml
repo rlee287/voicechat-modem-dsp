@@ -3,12 +3,6 @@ language: python
 notifications:
   email: false
 
-# Need this for now to build SciPy for Python 3.8
-addons:
-  apt:
-    packages:
-    - liblapack-dev
-
 #TODO: properly troubleshoot mypy permission errors
 matrix:
   include:

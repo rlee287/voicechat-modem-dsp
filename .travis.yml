@@ -25,11 +25,11 @@ install:
   - cat requirements.txt
   - pip install -r requirements.txt
   - pip install pytest coverage
-  - if [ $MYPY = true ]; then pip install mypy; pip install -e git+https://github.com/numpy/numpy-stubs.git#egg=numpy-stubs; fi
+  - if [ "$MYPY" = true ]; then pip install mypy; pip install -e git+https://github.com/numpy/numpy-stubs.git#egg=numpy-stubs; fi
 
 script:
   - sh ./run_tests_coverage.sh
-  - if [ $MYPY = true ]; then sh ./run_mypy.sh; fi
+  - if [ "$MYPY" = true ]; then sh ./run_mypy.sh; fi
 
 after_script:
   - wget -O codecov_upload "https://codecov.io/bash"

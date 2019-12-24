@@ -7,8 +7,15 @@ name = "pypi"
 numpy = "*"
 scipy = "*"
 protobuf = "*"
+ipykernel = "*"
 
 [dev-packages]
 pytest = "*"
-mypy = {version="*", python_version=">='3.5'"}
 coverage = "*"
+sphinx = "*"
+nbsphinx = "*"
+itikz = "*"
+
+[dev-packages.mypy]
+version = "*"
+python_version = ">='3.5'"

@@ -12,15 +12,13 @@ addons:
 python:
   - "3.8"
   - "3.7"
-  - "3.4"
-  - "pypy3"
+#  - "pypy3"
   - "3.6"
   - "3.5"
 
 cache: pip
 
 install:
-  - if [ $TRAVIS_PYTHON_VERSION = "3.4" ]; then pip install pip==18.0; fi
   - pip install pipenv
   - rm Pipfile.lock # Re-lock dependencies
   - pipenv lock -r > requirements.txt

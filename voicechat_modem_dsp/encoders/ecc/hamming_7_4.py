@@ -1,11 +1,12 @@
 import math
 
 from ..bitstream import read_bitstream, write_bitstream
+from ..bitstream import readable_bytearr
 
 # Functions should accept either bytes or bytearrays
 # Manipulate bytearrays during construction but return bytes
 # Once encoded, data should be immutable
-def hamming_encode_7_4(bitstream):
+def hamming_encode_7_4(bitstream: readable_bytearr) -> bytes:
     output_arr=bytearray(math.ceil(len(bitstream)*7/4))
     output_index=0
     for i in range(0,8*len(bitstream),4):
@@ -34,7 +35,7 @@ def hamming_encode_7_4(bitstream):
 # Functions should accept either bytes or bytearrays
 # Manipulate bytearrays during construction but return bytes
 # Once encoded, data should be immutable
-def hamming_decode_7_4(bitstream):
+def hamming_decode_7_4(bitstream: readable_bytearr) -> bytes:
     output_arr=bytearray(math.floor(len(bitstream)*4/7))
     output_index=0
     for i in range(0,8*len(bitstream),7):

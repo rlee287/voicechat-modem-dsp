@@ -1,15 +1,18 @@
 from .bitstream import read_bitstream_iterator, write_bitstream
+from .bitstream import readable_bytearr, writeable_bytearr
+
+from typing import List, Dict, Callable
 
 import base64
 
 # These return a list of numbers corresponding to symbols
-def base_2_encode(bitstream):
+def base_2_encode(bitstream: readable_bytearr) -> List[int]:
     return_list=list()
     for bit in read_bitstream_iterator(bitstream):
         return_list.append(1 if bit else 0)
     return return_list
 
-def base_2_decode(datastream):
+def base_2_decode(datastream: List[int]) -> readable_bytearr:
     base_2_mapping={0:False, 1:True}
     if len(datastream)%8 != 0:
         raise ValueError("Inappropriate datastream length")
@@ -21,7 +24,7 @@ def base_2_decode(datastream):
             raise ValueError("Illegal symbol detected in datastream")
     return bytes(return_bytearray)
 
-def base_4_encode(bitstream):
+def base_4_encode(bitstream: readable_bytearr) -> List[int]:
     return_list=list()
     rollover_counter=0
     emit_symbol=False
@@ -35,7 +38,7 @@ def base_4_encode(bitstream):
         emit_symbol=not emit_symbol
     return return_list
 
-def base_4_decode(datastream):
+def base_4_decode(datastream: List[int]) -> readable_bytearr:
     base_4_mapping={0:(False,False),
                     1:(False,True),
                     2:(True,False),
@@ -52,7 +55,7 @@ def base_4_decode(datastream):
             raise ValueError("Illegal symbol detected in datastream")
     return bytes(return_bytearray)
 
-def base_8_encode(bitstream):
+def base_8_encode(bitstream: readable_bytearr) -> List[int]:
     return_list=list()
     rollover_counter=0
     emit_symbol_counter=0
@@ -74,7 +77,7 @@ def base_8_encode(bitstream):
         return_list.append(rollover_counter)
     return return_list
 
-def base_8_decode(datastream):
+def base_8_decode(datastream: List[int]) -> readable_bytearr:
     base_8_mapping={0:(False,False,False),
                     1:(False,False,True),
                     2:(False,True,False),
@@ -104,10 +107,10 @@ def base_8_decode(datastream):
         del return_bytearray[-1]
     return bytes(return_bytearray)
 
-def base_16_encode(bitstream):
+def base_16_encode(bitstream: readable_bytearr) -> List[int]:
     return [int(chr(c), 16) for c in base64.b16encode(bitstream)]
 
-def base_16_decode(datastream):
+def base_16_decode(datastream: List[int]) -> readable_bytearr:
     if len(datastream)%2!=0:
         raise ValueError("Inappropriate datastream length")
     for c in datastream:
@@ -117,7 +120,7 @@ def base_16_decode(datastream):
     return base64.b16decode(bytes("".join([hex(c)[-1] for c in datastream]),
                             "ascii"),casefold=True)
 
-def base_32_encode(bitstream):
+def base_32_encode(bitstream: readable_bytearr) -> List[int]:
     base_32_mapping = {char:int_val for int_val,char in 
         enumerate("ABCDEFGHIJKLMNOPQRSTUVWXYZ234567")}
     base_32_encodestr=str(base64.b32encode(bitstream),"ascii")
@@ -126,7 +129,7 @@ def base_32_encode(bitstream):
     # b32encode works properly -> KeyError impossible
     return [base_32_mapping[char] for char in base_32_encodestr]
 
-def base_32_decode(datastream):
+def base_32_decode(datastream: List[int]) -> readable_bytearr:
     # Convert to dict to avoid negative index wrapping
     base_32_mapping=dict(enumerate("ABCDEFGHIJKLMNOPQRSTUVWXYZ234567"))
     try:
@@ -141,7 +144,7 @@ def base_32_decode(datastream):
     except ValueError:
         raise ValueError("Inappropriate datastream length")
 
-def base_64_encode(bitstream):
+def base_64_encode(bitstream: readable_bytearr) -> List[int]:
     base_64_mapping = {char:int_val for int_val,char in
         enumerate("ABCDEFGHIJKLMNOPQRSTUVWXYZ"
         "abcdefghijklmnopqrstuvwxyz0123456789+/")}
@@ -151,7 +154,7 @@ def base_64_encode(bitstream):
     # b32encode works properly -> KeyError impossible
     return [base_64_mapping[char] for char in base_64_encodestr]
 
-def base_64_decode(datastream):
+def base_64_decode(datastream: List[int]) -> readable_bytearr:
     # Convert to dict to avoid negative index wrapping
     base_64_mapping=dict(enumerate("ABCDEFGHIJKLMNOPQRSTUVWXYZ"
         "abcdefghijklmnopqrstuvwxyz0123456789+/"))
@@ -166,10 +169,10 @@ def base_64_decode(datastream):
     return base64.b64decode(base_64_str)
 
 # Bitstream already base 256 so conversion is a no-op
-def base_256_encode(bitstream):
+def base_256_encode(bitstream: readable_bytearr) -> List[int]:
     return list(bitstream)
 
-def base_256_decode(datastream):
+def base_256_decode(datastream: List[int]) -> readable_bytearr:
     # Catch ValueError to provide our own message here
     try:
         return bytes(datastream)
@@ -177,6 +180,8 @@ def base_256_decode(datastream):
         raise ValueError("Illegal symbol detected in datastream")
 
 # Convenience mapping to allow for lookup based on len(modulation_list)
+#encode_function_mappings: Dict[int,Callable[[readable_bytearr], List[int]]]
+#decode_function_mappings: Dict[int,Callable[[List[int]], readable_bytearr]]
 encode_function_mappings = {2:base_2_encode, 4:base_4_encode,
                             8:base_8_encode, 16:base_16_encode,
                             32:base_32_encode, 64:base_64_encode,

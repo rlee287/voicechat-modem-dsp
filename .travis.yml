@@ -3,18 +3,18 @@ language: python
 notifications:
   email: false
 
-# Need this for now to build SciPy for Python 3.8
-addons:
-  apt:
-    packages:
-    - liblapack-dev
-
-python:
-  - "3.8"
-  - "3.7"
-#  - "pypy3"
-  - "3.6"
-  - "3.5"
+#TODO: properly troubleshoot mypy permission errors
+matrix:
+  include:
+    - python: '3.8'
+      os: linux
+    - python: '3.7'
+      env: MYPY=true
+      os: linux
+    - python: '3.6'
+      os: linux
+    - python: '3.5'
+      os: linux
 
 cache: pip
 
@@ -25,11 +25,11 @@ install:
   - cat requirements.txt
   - pip install -r requirements.txt
   - pip install pytest coverage
-  - if [ $TRAVIS_PYTHON_VERSION = "3.7" ]; then pip install mypy; fi
+  - if [ "$MYPY" = true ]; then pip install mypy; pip install -e git+https://github.com/numpy/numpy-stubs.git#egg=numpy-stubs; fi
 
 script:
   - sh ./run_tests_coverage.sh
-  - if [ $TRAVIS_PYTHON_VERSION = "3.7" ]; then sh ./run_mypy.sh; fi
+  - if [ "$MYPY" = true ]; then sh ./run_mypy.sh; fi
 
 after_script:
   - wget -O codecov_upload "https://codecov.io/bash"

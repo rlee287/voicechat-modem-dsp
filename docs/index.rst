@@ -10,8 +10,8 @@ Welcome to Voicechat Modem (DSP Component)'s documentation!
    :maxdepth: 2
    :caption: Contents:
 
-   notebooks/Trapezoidal Averaging
    notebooks/Pre-Modulation Gaussian Smoothing
+   specs/config
 
 Indices and tables
 ==================

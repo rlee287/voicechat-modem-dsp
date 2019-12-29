@@ -52,13 +52,8 @@ class ASKModulator(Modulator):
         gaussian_sigma_f=Modulator.sigma_mult_f/(2*np.pi*halfway_thresh)
         return min(gaussian_sigma_t,gaussian_sigma_f)
 
-    # Expose modulator_utils calculation here as OOP read-only property
-    @property
-    def _samples_per_symbol(self):
-        return modulator_utils.samples_per_symbol(self.fs,self.baud)
-    
     def modulate(self, datastream):
-        # Compute gaussian smoothing kernel
+        samples_per_symbol=modulator_utils.samples_per_symbol(self.fs,self.baud)
         gaussian_sigma=self._calculate_sigma
         gaussian_window=modulator_utils.gaussian_window(self.fs,gaussian_sigma)
 
@@ -68,7 +63,7 @@ class ASKModulator(Modulator):
 
         # Upsample amplitude to actual sampling rate
         interp_sample_count=int(np.ceil(
-            len(amplitude_data)*self._samples_per_symbol))
+            len(amplitude_data)*samples_per_symbol))
         time_array=modulator_utils.generate_timearray(
             self.fs,interp_sample_count)
         interpolated_amplitude=modulator_utils.previous_resample_interpolate(
@@ -82,7 +77,7 @@ class ASKModulator(Modulator):
             np.cos(2*np.pi*self.carrier_freq*time_array)
 
     def demodulate(self, modulated_data):
-        # TODO: find an easier robust way to demodulate?
+        samples_per_symbol=modulator_utils.samples_per_symbol(self.fs,self.baud)
         # Use complex exponential to allow for phase drift
         time_array=modulator_utils.generate_timearray(
             self.fs,len(modulated_data))
@@ -108,7 +103,7 @@ class ASKModulator(Modulator):
 
         # Round to account for floating point weirdness
         interval_count=int(np.round(
-            len(modulated_data)/self._samples_per_symbol))
+            len(modulated_data)/samples_per_symbol))
         interval_offset=filt_delay
         list_amplitudes=list()
 
@@ -117,9 +112,9 @@ class ASKModulator(Modulator):
             # Convert above time width into sample point width
             transition_width*=self.fs
 
-            interval_begin=interval_offset+i*self._samples_per_symbol
+            interval_begin=interval_offset+i*samples_per_symbol
             # Perform min in order to account for floating point weirdness
-            interval_end=min(interval_begin+self._samples_per_symbol,
+            interval_end=min(interval_begin+samples_per_symbol,
                 len(modulated_data)-1)
 
             # Shrink interval by previously calculated transition width
@@ -144,4 +139,8 @@ class ASKModulator(Modulator):
         # Subtract data points by 1 and remove 0 padding
         # Neat side effect: -1 is an invalid data point
         datastream=vector_cluster[0]-1
+        if (datastream[0]!=-1 or datastream[-1]!=-1
+                or any(datastream[1:-1]==-1)):
+            warnings.warn("Corrupted datastream detected while demodulating",
+                ModulationIntegrityWarning)
         return datastream[1:-1]

@@ -8,8 +8,11 @@ class TxFile(cleo.Command):
 
     transmit_file
         {filename : Data file to modulate}
-        {--o|output=modulated.wav : Output audio file }
-        {--config= : Configuration file} 
+        {--o|output=modulated.wav : Output file for audio}
+        {--config= : Modulation configuration file}
+        {--no-preamble : Do not include audio preamble with 
+            modulation information}
+        {--no-toneburst : Do not include calibration toneburst}
     """
 
     def handle(self):

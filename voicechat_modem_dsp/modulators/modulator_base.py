@@ -6,7 +6,7 @@ from typing import Sequence
 
 """
 Base class for other modulator objects
-Also contains useful helper functions as static methods
+Also contains useful helpers as static attributes
 """
 class Modulator(ABC):
     # norm.isf(1/(2*2^8))

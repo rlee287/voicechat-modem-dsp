@@ -1,5 +1,3 @@
-# Stubs for modulators.modulator_ask (Python 3)
-
 from .modulator_base import Modulator
 from typing import Sequence, Dict, Tuple
 

@@ -1,9 +1,11 @@
-Specification of the Configuration File
-=======================================
+Specification of the Configuration File (Version 0.1)
+=====================================================
 
 The configuration file is written using the `StrictYaml <https://hitchdev.com/strictyaml/>`_ subset of YAML.
 
-The configuration file first specifies the sampling rate and the error correction code to use. After this, the config file specifies modulation mode specific parameters.
+The configuration file first specifies the config file version (``version``),
+the sampling rate (``fs``), and the error correction code to use.
+After this, the config file specifies modulation mode specific parameters.
 
 Error Correction Codes
 ----------------------

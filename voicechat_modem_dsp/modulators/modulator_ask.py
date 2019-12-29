@@ -10,10 +10,6 @@ from scipy.cluster.vq import vq
 import warnings
 
 class ASKModulator(Modulator):
-    # norm.isf(1/(2*2^8))
-    sigma_mult_t=2.89
-    # norm.isf(0.0001)
-    sigma_mult_f=3.72
 
     def __init__(self, fs, carrier, amp_list, baud):
         if baud>=0.5*carrier:
@@ -47,13 +43,13 @@ class ASKModulator(Modulator):
     @property
     def _calculate_sigma(self):
         #sigma_t = w/4k, at most half of the pulse is smoothed away
-        gaussian_sigma_t=(1/self.baud)/(4*ASKModulator.sigma_mult_t)
+        gaussian_sigma_t=(1/self.baud)/(4*Modulator.sigma_mult_t)
         # Ensure dropoff at halfway to doubled carrier frequency is -80dB
         # This is not the same as carrier_freq because Nyquist reflections
         doubled_carrier_refl=min(
             2*self.carrier_freq,self.fs-2*self.carrier_freq)
         halfway_thresh=0.5*doubled_carrier_refl
-        gaussian_sigma_f=ASKModulator.sigma_mult_f/(2*np.pi*halfway_thresh)
+        gaussian_sigma_f=Modulator.sigma_mult_f/(2*np.pi*halfway_thresh)
         return min(gaussian_sigma_t,gaussian_sigma_f)
 
     # Expose modulator_utils calculation here as OOP read-only property
@@ -117,7 +113,7 @@ class ASKModulator(Modulator):
         list_amplitudes=list()
 
         for i in range(interval_count):
-            transition_width=ASKModulator.sigma_mult_t*self._calculate_sigma
+            transition_width=Modulator.sigma_mult_t*self._calculate_sigma
             # Convert above time width into sample point width
             transition_width*=self.fs
 

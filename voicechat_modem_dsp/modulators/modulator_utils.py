@@ -75,9 +75,9 @@ def average_interval_data(data, begin, end):
 
     # Construct input to numpy.trapz
     x_array=list(range(int(np.ceil(begin)),int(np.floor(end))+1))
-    x_array=np.asarray([begin]+x_array+[end])
+    y_array=[data[i] for i in x_array]
 
-    y_array=[data[i] for i in range(int(np.ceil(begin)),int(np.floor(end))+1)]
+    x_array=np.asarray([begin]+x_array+[end])
     y_array=np.asarray([begin_lininterp]+y_array+[end_lininterp])
 
     return np.trapz(y_array,x_array)/width

@@ -34,8 +34,8 @@ class ASKModulator(Modulator):
             warnings.warn("Some amplitudes may be too low "
                           "to be distinguishable from background noise",
                           ModulationIntegrityWarning)
-        if any(dx<=0.05 for dx in np.diff(amp_list)):
-            warnings.warn("Some amplitudes may be too close "
+        if any(dx<=0.05 for dx in np.diff(sorted(amp_list))):
+            warnings.warn("Amplitudes may be too close "
                           "to be distinguishable from each other",
                           ModulationIntegrityWarning)
         # TODO: additional warnings relating to filter overshoot and the like

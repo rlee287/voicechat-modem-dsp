@@ -31,6 +31,11 @@ class FSKModulator(Modulator):
         if amplitude<0.1:
             warnings.warn("Amplitude may be too small to allow "
                           "reliable reconstruction",ModulationIntegrityWarning)
+        dft_min_freq_gap=0.5*fs/(fs/baud)
+        if any(dx<=dft_min_freq_gap for dx in np.diff(sorted(freq_list))):
+            warnings.warn("Frequencies may be too close "
+                          "to be distinguishable from one another",
+                          ModulationIntegrityWarning)
         # TODO: additional warnings relating to Goertzel resolution, etc.
 
     @property

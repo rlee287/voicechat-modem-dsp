@@ -4,6 +4,7 @@ import numpy as np
 
 from voicechat_modem_dsp.encoders.encode_pad import *
 from voicechat_modem_dsp.modulators.modulator_ask import ASKModulator
+from voicechat_modem_dsp.modulators.modulator_fsk import FSKModulator
 from voicechat_modem_dsp.modulators.modulator_utils import ModulationIntegrityWarning
 
 import pytest
@@ -45,6 +46,25 @@ def test_unit_ask_integrity_voice():
     modulated_data=modulator.modulate(datastream)
     demodulated_datastream=modulator.demodulate(modulated_data)
     recovered_bitstream=base_16_decode(demodulated_datastream)
+
+    assert bitstream==recovered_bitstream
+
+@pytest.mark.unit
+def test_unit_fsk_integrity_bell_202():
+    frequency_list=[1200,2200]
+    # Shuffle as opposed to complete random to test all 0x00-0xff
+    list_data=list(range(256))
+    bitstream=bytes(list_data)
+    datastream=base_2_encode(bitstream)
+
+    sampling_freq=48000
+    amplitude=0.5
+    baud_rate=1200
+
+    modulator=FSKModulator(sampling_freq,amplitude,frequency_list,baud_rate)
+    modulated_data=modulator.modulate(datastream)
+    demodulated_datastream=modulator.demodulate(modulated_data)
+    recovered_bitstream=base_2_decode(demodulated_datastream)
 
     assert bitstream==recovered_bitstream
 

@@ -12,11 +12,11 @@ import warnings
 
 class FSKModulator(Modulator):
     def __init__(self, fs, amplitude, freq_list, baud):
+        if min(freq_list)<=0:
+            raise ValueError("Invalid frequencies given")
         if baud>min(freq_list):
             raise ValueError("Baud is too high to be modulated "+
                              "using given frequencies")
-        if min(freq_list)<=0:
-            raise ValueError("Invalid frequencies given")
         # Nyquist limit
         if max(freq_list)>=0.5*fs:
             raise ValueError("Maximum frequency is too high for sampling rate")

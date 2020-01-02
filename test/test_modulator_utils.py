@@ -22,6 +22,8 @@ def test_filtergen_error():
         filt=lowpass_fir_filter(2000,500,100)
     with pytest.raises(ValueError):
         filt=lowpass_fir_filter(2000,1000,4000)
+    with pytest.raises(ValueError):
+        filt=goertzel_iir(3,2)
 
 @pytest.mark.unit
 def test_unit_average_int():

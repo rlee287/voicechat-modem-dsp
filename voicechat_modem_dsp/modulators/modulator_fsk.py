@@ -43,7 +43,7 @@ class FSKModulator(Modulator):
         #sigma_t = w/4k, at most half of the pulse is smoothed away
         gaussian_sigma_t=(1/self.baud)/(4*Modulator.sigma_mult_t)
         # TODO: test possibilities that make sense for FSK
-        gaussian_sigma_f=(2*np.pi/max(self.freq_list.values()))/Modulator.sigma_mult_t
+        gaussian_sigma_f=0.25*(2*np.pi/max(self.freq_list.values()))/Modulator.sigma_mult_t
         return min(gaussian_sigma_t,gaussian_sigma_f)
 
     def modulate(self, datastream):

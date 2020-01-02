@@ -1,6 +1,6 @@
 # Stubs for modulators.modulator_utils (Python 3)
 
-from typing import Any, Sequence
+from typing import Any, Sequence, Tuple
 
 from numpy import ndarray
 
@@ -14,3 +14,6 @@ def fred_harris_fir_tap_count(fs: float, transition_width: float, db_attenuation
 def lowpass_fir_filter(fs: float, cutoff_low: float, cutoff_high: float, attenuation: float = ...) -> ndarray: ...
 
 def linearize_fir(filter: Any) -> None: ...
+
+def goertzel_iir(freq: float, fs: float) \
+    -> Tuple[Sequence[complex],Sequence[complex]]: ...

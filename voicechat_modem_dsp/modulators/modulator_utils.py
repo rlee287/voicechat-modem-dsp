@@ -140,3 +140,12 @@ def linearize_fir(fir_filter):
     frequencies,response=signal.freqz(fir_filter)
     # TODO fill in the rest of this code if this ends up being actually used
     raise NotImplementedError
+
+def goertzel_iir(freq,fs):
+    # See https://www.dsprelated.com/showarticle/796.php for derivation
+    if freq>=0.5*fs:
+        raise ValueError("Desired peak frequency is too high")
+    norm_freq=2*np.pi*freq/fs
+    numerator=[1,-np.exp(-1j*norm_freq)]
+    denominator=[1,-2*np.cos(norm_freq),1]
+    return (numerator,denominator)

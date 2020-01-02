@@ -45,16 +45,6 @@ class FSKModulator(Modulator):
         # TODO: test possibilities that make sense for FSK
         gaussian_sigma_f=(2*np.pi/max(self.freq_list.values()))/Modulator.sigma_mult_t
         return min(gaussian_sigma_t,gaussian_sigma_f)
-    
-    @staticmethod
-    def _goertzel_iir(freq,fs):
-        # See https://www.dsprelated.com/showarticle/796.php for derivation
-        if freq>=0.5*fs:
-            raise ValueError("Desired peak frequency is too high")
-        norm_freq=2*np.pi*freq/fs
-        numerator=[1,-np.exp(-1j*norm_freq)]
-        denominator=[1,-2*np.cos(norm_freq),1]
-        return (numerator,denominator)
 
     def modulate(self, datastream):
         samples_per_symbol=modulator_utils.samples_per_symbol(self.fs,self.baud)
@@ -94,7 +84,7 @@ class FSKModulator(Modulator):
 
     def demodulate(self, modulated_data):
         samples_per_symbol=modulator_utils.samples_per_symbol(self.fs,self.baud)
-        goertzel_filters={index: FSKModulator._goertzel_iir(freq,self.fs)
+        goertzel_filters={index: modulator_utils.goertzel_iir(freq,self.fs)
             for index, freq in self.freq_list.items()}
         list_frequencies=[self.freq_list[i] for i in range(len(self.freq_list))]
         
@@ -134,11 +124,7 @@ class FSKModulator(Modulator):
         codebook_vectors=self.amplitude*np.identity(len(self.freq_list))
         codebook_vectors=np.insert(codebook_vectors,
             0,[0]*len(self.freq_list),axis=0)
-        #print(codebook_vectors)
-        #import pprint
-        #pprint.pprint(goertzel_results)
         vector_cluster=vq(goertzel_results, codebook_vectors)
-        #pprint.pprint(vector_cluster)
 
         # Subtract data points by 1 and remove 0 padding
         # Neat side effect: -1 is an invalid data point

@@ -12,11 +12,13 @@ import pytest
 def test_invalid_nyquist():
     with pytest.raises(ValueError, match=r"Carrier frequency is too high.+"):
         bad_modulator=ASKModulator(1000,600,np.linspace(0.2,1,8),20)
-
     with pytest.raises(ValueError, match=r"Baud is too high.+"):
         bad_modulator=ASKModulator(1000,100,np.linspace(0.2,1,8),80)
+
     with pytest.raises(ValueError, match=r"Baud is too high.+"):
         bad_modulator=FSKModulator(1000,1,np.linspace(200,1000,8),800)
+    with pytest.raises(ValueError, match=r"Maximum frequency is too high.+"):
+        bad_modulator=FSKModulator(1000,0.9,np.linspace(200,600,16),100)
 
     with pytest.warns(ModulationIntegrityWarning):
         bad_modulator=ASKModulator(900,400,np.linspace(0.2,1,8),100)

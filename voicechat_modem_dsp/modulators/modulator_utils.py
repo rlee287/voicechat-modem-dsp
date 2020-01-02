@@ -141,8 +141,12 @@ def linearize_fir(fir_filter):
     # TODO fill in the rest of this code if this ends up being actually used
     raise NotImplementedError
 
+"""
+Helper function to computer the IIR filter for the Goertzel algorithm
+
+Derivation of formula from https://www.dsprelated.com/showarticle/796.php
+"""
 def goertzel_iir(freq,fs):
-    # See https://www.dsprelated.com/showarticle/796.php for derivation
     if freq>=0.5*fs:
         raise ValueError("Desired peak frequency is too high")
     norm_freq=2*np.pi*freq/fs

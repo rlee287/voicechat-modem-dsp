@@ -75,9 +75,9 @@ def average_interval_data(data, begin, end):
 
     # Construct input to numpy.trapz
     x_array=list(range(int(np.ceil(begin)),int(np.floor(end))+1))
-    x_array=np.asarray([begin]+x_array+[end])
+    y_array=[data[i] for i in x_array]
 
-    y_array=[data[i] for i in range(int(np.ceil(begin)),int(np.floor(end))+1)]
+    x_array=np.asarray([begin]+x_array+[end])
     y_array=np.asarray([begin_lininterp]+y_array+[end_lininterp])
 
     return np.trapz(y_array,x_array)/width
@@ -140,3 +140,17 @@ def linearize_fir(fir_filter):
     frequencies,response=signal.freqz(fir_filter)
     # TODO fill in the rest of this code if this ends up being actually used
     raise NotImplementedError
+
+"""
+Helper function to computer the IIR filter for the Goertzel algorithm
+
+Derivation of formula from https://www.dsprelated.com/showarticle/796.php
+"""
+def goertzel_iir(freq,fs):
+    if freq>=0.5*fs:
+        raise ValueError("Desired peak frequency is too high")
+    norm_freq=2*np.pi*freq/fs
+    numerator=[1,-np.exp(-1j*norm_freq)]
+    denominator=[1,-2*np.cos(norm_freq),1]
+    return (numerator,denominator)
+

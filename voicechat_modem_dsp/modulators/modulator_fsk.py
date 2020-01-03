@@ -31,6 +31,7 @@ class FSKModulator(Modulator):
         if amplitude<0.1:
             warnings.warn("Amplitude may be too small to allow "
                           "reliable reconstruction",ModulationIntegrityWarning)
+        # Frequency spacing for DFT
         dft_min_freq_gap=0.5*fs/(fs/baud)
         if any(dx<=dft_min_freq_gap for dx in np.diff(sorted(freq_list))):
             warnings.warn("Frequencies may be too close "
@@ -42,6 +43,7 @@ class FSKModulator(Modulator):
     def _calculate_sigma(self):
         #sigma_t = w/4k, at most half of the pulse is smoothed away
         gaussian_sigma_t=(1/self.baud)/(4*Modulator.sigma_mult_t)
+        # At most 1/4 of the highest frequency cycle is smoothed away
         # TODO: test possibilities that make sense for FSK
         gaussian_sigma_f=0.25*(2*np.pi/max(self.freq_list.values()))/Modulator.sigma_mult_t
         return min(gaussian_sigma_t,gaussian_sigma_f)
@@ -67,7 +69,7 @@ class FSKModulator(Modulator):
         shaped_frequency=signal.convolve(interpolated_frequency,gaussian_window,
             "same",method="fft")
 
-        # Construct smoothed amplitude mask
+        # Construct smoothed frequency mask
         # TODO: be smarter about only convolving the edges
         amplitude_mask=np.asarray([0]+[self.amplitude]*len(datastream)+[0])
         interpolated_amplitude=modulator_utils.previous_resample_interpolate(
@@ -107,7 +109,7 @@ class FSKModulator(Modulator):
                 interval_begin+=transition_width
             if i!=interval_count-1:
                 interval_end-=transition_width
-            # Use np.floor and np.ceil to get integer indexes
+            # Round transition boundaries to get integer indexes
             # TODO: find elegant way to handle noninteger interval bounds
             interval_begin=int(np.round(interval_begin))
             interval_end=int(np.round(interval_end))

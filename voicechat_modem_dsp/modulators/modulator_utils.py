@@ -153,4 +153,3 @@ def goertzel_iir(freq,fs):
     numerator=[1,-np.exp(-1j*norm_freq)]
     denominator=[1,-2*np.cos(norm_freq),1]
     return (numerator,denominator)
-

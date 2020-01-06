@@ -90,7 +90,6 @@ def test_unit_fsk_integrity_high_pitch():
 
     assert bitstream==recovered_bitstream
 
-@pytest.mark.filterwarnings("ignore")
 @pytest.mark.property
 def test_property_ask_integrity():
     amplitude_list=list(np.linspace(0.1,1,16))
@@ -103,10 +102,11 @@ def test_property_ask_integrity():
         datastream=base_16_encode(bitstream)
 
         sampling_freq=get_rand_float(8000,48000)
-        carrier_freq=get_rand_float(256,sampling_freq/3)
+        carrier_freq=get_rand_float(256,sampling_freq/2)
         baud_rate=get_rand_float(128,carrier_freq/4)
 
         with warnings.catch_warnings():
+            warnings.simplefilter("error",category=ModulationIntegrityWarning)
             try:
                 modulator=ASKModulator(sampling_freq,
                     carrier_freq,amplitude_list,baud_rate)
@@ -121,7 +121,6 @@ def test_property_ask_integrity():
 
         assert bitstream==recovered_bitstream
 
-@pytest.mark.filterwarnings("ignore")
 @pytest.mark.property
 def test_property_fsk_integrity():
     frequency_list=list(np.linspace(512,2048,16))
@@ -138,6 +137,7 @@ def test_property_fsk_integrity():
         baud_rate=get_rand_float(64,256)
 
         with warnings.catch_warnings():
+            warnings.simplefilter("error",category=ModulationIntegrityWarning)
             try:
                 modulator=FSKModulator(sampling_freq,
                     amplitude,frequency_list,baud_rate)

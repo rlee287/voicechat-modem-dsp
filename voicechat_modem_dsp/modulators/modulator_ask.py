@@ -10,7 +10,6 @@ from scipy.cluster.vq import vq
 import warnings
 
 class ASKModulator(Modulator):
-
     def __init__(self, fs, carrier, amp_list, baud):
         if baud>=0.5*carrier:
             raise ValueError("Baud is too high to be modulated "+

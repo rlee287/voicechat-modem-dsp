@@ -76,20 +76,17 @@ The parameters for the ``fsk`` mode are as follows:
 - ``amplitude:`` The amplitude of the signal
 - ``frequencies:`` A list of frequencies between 0 and the Nyquist limit
 
-Example File
-------------
+Example Files
+-------------
 
-This is an example config file for `Bell 202 <https://en.wikipedia.org/wiki/Bell_202_modem>`_ FSK modulation.
+`Bell 202 <https://en.wikipedia.org/wiki/Bell_202_modem>`_ FSK Modulation
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. code-block:: yaml
+.. literalinclude:: bell_202.yaml
+    :language: yaml
 
-    version: 0.1
-    fs: 48000
-    ecc: none
-    modulators:
-        - mode: fsk
-          amplitude: 1
-          frequencies:
-              - 2200
-              - 1200
-          baud: 1200
+1024 bits/second ASK Modulation
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. literalinclude:: ask_1k.yaml
+    :language: yaml

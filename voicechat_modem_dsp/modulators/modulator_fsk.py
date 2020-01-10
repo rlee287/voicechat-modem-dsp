@@ -65,9 +65,6 @@ class FSKModulator(Modulator):
             self.fs,interp_sample_count)
         interpolated_frequency=modulator_utils.previous_resample_interpolate(
             time_array, self.baud, frequency_data)
-        # Smooth frequencies with Gaussian kernel
-        shaped_frequency=signal.convolve(interpolated_frequency,gaussian_window,
-            "same",method="fft")
 
         # Construct smoothed frequency mask
         # TODO: be smarter about only convolving the edges
@@ -79,7 +76,7 @@ class FSKModulator(Modulator):
 
         # Frequency is the derivative of phase
         phase_array=scipy.integrate.cumtrapz(
-            shaped_frequency,time_array,initial=0)%1
+            interpolated_frequency,time_array,initial=0)
         phase_array*=2*np.pi
 
         return shaped_amplitude*np.cos(phase_array)

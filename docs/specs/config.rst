@@ -82,11 +82,11 @@ Example Files
 `Bell 202 <https://en.wikipedia.org/wiki/Bell_202_modem>`_ FSK Modulation
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. literalinclude:: bell_202.yaml
+.. literalinclude:: examples/bell_202.yaml
     :language: yaml
 
 1024 bits/second ASK Modulation
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. literalinclude:: ask_1k.yaml
+.. literalinclude:: examples/ask_1k.yaml
     :language: yaml

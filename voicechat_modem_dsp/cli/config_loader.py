@@ -34,11 +34,17 @@ fsk_schema=Map({
     "frequencies": UniqueSeq(Float()) | CommaSeparated(Float())
 })
 
+# TODO: more informative ValidationError messages
+# This is partially due to underdocumented libraries
 def parse_config_str(string):
     config_obj=load(string,init_config_schema)
     # TODO: check version number
     if config_obj["fs"].data<=0:
-        raise ValueError("Sampling frequency must be positive")
+        raise YAMLValidationError("Sampling frequency must be positive",
+            None,config_obj["fs"])
+    if not config_obj["modulators"].is_sequence():
+        raise YAMLValidationError("Modulators must be a list of modulators",
+            None,config_obj["modulators"])
     for index,modulator in enumerate(config_obj["modulators"]):
         for potential_validator in [ask_schema,psk_schema,qam_schema,
                 fsk_schema]:
@@ -48,5 +54,6 @@ def parse_config_str(string):
             except YAMLValidationError:
                 continue
         else: # No validator matched
-            raise ValueError("Invalid modulator found")
+            raise YAMLValidationError("Invalid modulator found "
+                "in modulator list",None,modulator)
     return config_obj

@@ -1,0 +1,8 @@
+version: 0.1
+fs: 4000
+ecc: none
+modulators:
+  - mode: triaxilated
+    baud: 2400
+    carrier: unknown
+    triangulation: unsuccessful

@@ -80,3 +80,4 @@ def construct_modulators(config_dict):
                 FSKModulator(fs, amplitude, frequencies, baud))
         else:
             raise ValueError("Mapping has invalid mode key")
+    return modulator_list

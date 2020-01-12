@@ -10,25 +10,25 @@ init_config_schema=Map({
 })
 
 ask_schema=Map({
-    "baud": Int(),
+    "baud": Float(),
     "mode": Enum(["ask"]),
     "carrier": Float(),
     "amplitudes": UniqueSeq(Float()) | CommaSeparated(Float())
 })
 psk_schema=Map({
-    "baud": Int(),
+    "baud": Float(),
     "mode": Enum(["psk"]),
     "carrier": Float(),
     "phases": UniqueSeq(Float()) | CommaSeparated(Float())
 })
 qam_schema=Map({
-    "baud": Int(),
+    "baud": Float(),
     "mode": Enum(["qam"]),
     "carrier": Float(),
     "phases": UniqueSeq(Complex()) | CommaSeparated(Complex())
 })
 fsk_schema=Map({
-    "baud": Int(),
+    "baud": Float(),
     "mode": Enum(["fsk"]),
     "amplitude": Float(),
     "frequencies": UniqueSeq(Float()) | CommaSeparated(Float())

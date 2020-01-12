@@ -2,9 +2,8 @@ import warnings
 import numpy as np
 
 from voicechat_modem_dsp.encoders.encode_pad import *
-from voicechat_modem_dsp.modulators.modulator_ask import ASKModulator
-from voicechat_modem_dsp.modulators.modulator_fsk import FSKModulator
-from voicechat_modem_dsp.modulators.modulator_utils import ModulationIntegrityWarning
+from voicechat_modem_dsp.modulators import ASKModulator, FSKModulator, \
+    ModulationIntegrityWarning
 
 import pytest
 

@@ -37,7 +37,7 @@ fsk_schema=Map({
 
 # TODO: more informative ValidationError messages
 # This is partially due to underdocumented libraries
-def parse_config_str(string):
+def parse_config_str(string: str) -> YAML:
     config_obj=load(string,init_config_schema)
     # TODO: check version number
     if config_obj["fs"].data<=0:

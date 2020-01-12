@@ -1,6 +1,7 @@
 from strictyaml import *
 
 from .yaml_schema_validators import Complex
+from ..modulators import ASKModulator, FSKModulator
 
 init_config_schema=Map({
     "version": Str(),
@@ -57,3 +58,25 @@ def parse_config_str(string):
             raise YAMLValidationError("Invalid modulator found "
                 "in modulator list",None,modulator)
     return config_obj
+
+def construct_modulators(config_dict):
+    fs=config_dict["fs"]
+    modulator_list=list()
+    for modulator_config in config_dict["modulators"]:
+        baud=modulator_config["baud"]
+        mode=modulator_config["mode"]
+        if mode=="ask":
+            carrier=modulator_config["carrier"]
+            amplitudes=modulator_config["amplitudes"]
+            modulator_list.append(ASKModulator(fs, carrier, amplitudes, baud))
+        elif mode=="psk":
+            pass
+        elif mode=="qam":
+            pass
+        elif mode=="fsk":
+            amplitude=modulator_config["amplitude"]
+            frequencies=modulator_config["frequencies"]
+            modulator_list.append(
+                FSKModulator(fs, amplitude, frequencies, baud))
+        else:
+            raise ValueError("Mapping has invalid mode key")

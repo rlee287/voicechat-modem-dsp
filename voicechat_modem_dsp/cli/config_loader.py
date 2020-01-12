@@ -25,7 +25,7 @@ qam_schema=Map({
     "baud": Float(),
     "mode": Enum(["qam"]),
     "carrier": Float(),
-    "phases": UniqueSeq(Complex()) | CommaSeparated(Complex())
+    "constellation": UniqueSeq(Complex()) | CommaSeparated(Complex())
 })
 fsk_schema=Map({
     "baud": Float(),

@@ -121,9 +121,7 @@ def lowpass_fir_filter(fs,cutoff_low,cutoff_high,attenuation=80):
     tap_count=fred_harris_fir_tap_count(fs,cutoff_high-cutoff_low,attenuation)
 
     # Remez would sometimes return NaN arrays as filters
-    # Least-Squares is not iterative so it may have better stability?
-    #lowpass_filt=signal.remez(tap_count,
-    #        [0,cutoff_low,cutoff_high,0.5*fs],[1,0],fs=fs)
+    # Least-Squares is not iterative so it may have better stability
     lowpass_filt=signal.firls(tap_count,[0,cutoff_low,cutoff_high,0.5*fs],
             [1,1,0,0],fs=fs)
     # TODO: remove zeros?

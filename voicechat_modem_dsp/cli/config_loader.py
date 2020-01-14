@@ -3,7 +3,10 @@ from strictyaml import Map, Str, Float, Enum, Any, UniqueSeq, CommaSeparated
 from strictyaml import load, YAML, YAMLValidationError
 
 from .yaml_schema_validators import Complex
-from ..modulators import ASKModulator, FSKModulator
+from ..modulators import ASKModulator, FSKModulator, Modulator
+
+from typing import List as TypingList
+from typing import Mapping as TypingMap
 
 init_config_schema=Map({
     "version": Str(),
@@ -61,9 +64,9 @@ def parse_config_str(string: str) -> YAML:
                 "in modulator list",None,modulator)
     return config_obj
 
-def construct_modulators(config_dict):
+def construct_modulators(config_dict: TypingMap) -> TypingList[Modulator]:
     fs=config_dict["fs"]
-    modulator_list=list()
+    modulator_list: TypingList[Modulator]=list()
     for modulator_config in config_dict["modulators"]:
         baud=modulator_config["baud"]
         mode=modulator_config["mode"]

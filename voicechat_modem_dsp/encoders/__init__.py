@@ -1,5 +1,8 @@
 from .encode_pad import *
 
+from typing import Dict, Callable, List
+from .bitstream import readable_bytearr
+
 # Convenience mapping to allow for lookup based on len(modulation_list)
 encode_function_mappings: Dict[int,Callable[[readable_bytearr], List[int]]]= \
     {2:base_2_encode, 4:base_4_encode,

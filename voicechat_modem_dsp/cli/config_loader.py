@@ -1,4 +1,6 @@
-from strictyaml import *
+# Import the schema types first, and then the actual loading stuff
+from strictyaml import Map, Str, Float, Enum, Any, UniqueSeq, CommaSeparated
+from strictyaml import load, YAML, YAMLValidationError
 
 from .yaml_schema_validators import Complex
 from ..modulators import ASKModulator, FSKModulator

@@ -7,17 +7,13 @@ from scipy.io import wavfile
 from strictyaml import YAMLValidationError
 
 from .config_loader import parse_config_str, construct_modulators
+from .command_utils import CLIError, ExtendedCommand
+
 from ..modulators import ASKModulator, FSKModulator
 from ..encoders import encode_function_mappings, decode_function_mappings
 
 """
-Error raised to exit from cleo.Command.handle early
-"""
-class CLIError(Exception):
-    pass
-
-"""
-Decorator that catches CLIErrors, prints the error,
+Decorator for class methods that catches CLIErrors, prints the error,
 and exits with a nonzero status code
 """
 def exit_on_error(func):
@@ -30,7 +26,7 @@ def exit_on_error(func):
     functools.update_wrapper(catch_error_and_exit,func)
     return catch_error_and_exit
 
-class TxFile(cleo.Command):
+class TxFile(ExtendedCommand):
     """
     Modulates a given datafile and saves modulated audio to an audio file
 
@@ -41,7 +37,7 @@ class TxFile(cleo.Command):
         {--no-header : Do not include audio header with 
             modulation information}
         {--no-preamble : Do not include calibration preamble}
-        {--raw : Shortcut for --no-preamble --no-toneburst}
+        {--raw : Shortcut for --no-header --no-preamble}
     """
 
     @exit_on_error
@@ -54,23 +50,11 @@ class TxFile(cleo.Command):
         if not config_file_name:
             raise CLIError("A configuration file must be specified.","error")
         if not os.path.isfile(config_file_name):
-            raise CLIError("Config file specified does not exist.","error")
+            raise CLIError("Configuration file {} does not exist."
+                .format(config_file_name),"error")
 
-        if os.path.exists(output_file_name):
-            if os.path.isdir(output_file_name):
-                raise CLIError("Output file {} must be writable as a file."
-                    .format(output_file_name),"error")
+        self.confirm_file_writable(output_file_name)
 
-            if self._io.is_interactive():
-                result=self.confirm("Output file {} already exists. Overwrite?"
-                    .format(output_file_name))
-                if not result:
-                    return 0
-            else:
-                raise CLIError("Output file {} already exists "
-                    "and program is in noninteractive mode."
-                    .format(output_file_name),"error")
-        
         if not os.path.isfile(input_file_name):
             raise CLIError("Input file {} must exist."
                 .format(input_file_name),"error")
@@ -82,6 +66,7 @@ class TxFile(cleo.Command):
         if has_header or has_preamble:
             raise CLIError("Headers and preambles are not yet supported.")
 
+        # Read in config file and check its validity
         self.line("Reading config file...")
         try:
             with open(config_file_name, "r") as fil:

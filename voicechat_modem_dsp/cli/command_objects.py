@@ -11,6 +11,7 @@ from .command_utils import CLIError, ExtendedCommand
 
 from ..modulators import ASKModulator, FSKModulator
 from ..encoders import encode_function_mappings, decode_function_mappings
+from ..encoders.ecc import hamming_7_4
 
 """
 Decorator for class methods that catches CLIErrors, prints the error,
@@ -102,6 +103,13 @@ class TxFile(ExtendedCommand):
 
         with open(input_file_name,"rb") as fil:
             bitstream=fil.read()
+        if config_obj["ecc"].data in ["none","raw"]:
+            pass
+        elif config_obj["ecc"].data in ["hamming_7_4"]:
+            bitstream=hamming_7_4.hamming_encode_7_4(bitstream)
+        else:
+            # Should never happen
+            raise CLIError("Invalid ECC mode found late; should have been caught earlier","error")
         datastream=datastream_encoder(bitstream)
         self.line("Modulating data...")
         modulated_datastream=modulator_obj.modulate(datastream)

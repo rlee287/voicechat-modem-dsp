@@ -61,7 +61,7 @@ The parameters for the ``qam`` mode are as follows:
 - ``baud:`` The symbol rate
 - ``carrier:`` The carrier frequency
 - ``constellation:`` A list of constellation points, specified either as
-  ``{re}+{im}i`` or as ``({amp}, {phase})``
+  ``{re}(+/-){im}i`` or as ``({amp}, {phase})``
 
 .. note::
     When specifying points in Cartesian form, the imaginary component

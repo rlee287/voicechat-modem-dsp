@@ -117,3 +117,86 @@ class TxFile(ExtendedCommand):
         self.line("Writing audio file...")
         wavfile.write(output_file_name, int(modulator_obj.fs),
             modulated_datastream)
+
+class RxFile(ExtendedCommand):
+    """
+    Deodulates a given audiofile and saves demodulated data to a file
+
+    receive_file
+        {input-file : Wave file to demodulate}
+        {--o|output= : Output file for audio}
+        {--config= : Modulation configuration file (when header is missing)}
+    """
+
+    @exit_on_error
+    def handle(self):
+        config_file_name=self.option("config")
+        output_file_name=self.option("output")
+        input_file_name=self.argument("input-file")
+
+        # Check validity of command line options
+        if not output_file_name:
+            raise CLIError("An output file must be specified.","error")
+
+        if not os.path.isfile(input_file_name):
+            raise CLIError("Input file {} must exist."
+                .format(input_file_name),"error")
+
+        self.confirm_file_writable(output_file_name)
+
+        # TODO: try to extract information from header once that is implemented
+        self.line("Falling back onto reading config file...")
+
+        if not config_file_name:
+            raise CLIError("A configuration file must be specified.","error")
+        if not os.path.isfile(config_file_name):
+            raise CLIError("Configuration file {} does not exist."
+                .format(config_file_name),"error")
+
+        try:
+            with open(config_file_name, "r") as fil:
+                config_text=fil.read()
+                config_obj=parse_config_str(config_text)
+        except YAMLValidationError as e:
+            # e.args[0] is the error message
+            raise CLIError(e.args[0],"error")
+
+        # TODO: obviously temporary; fix once prerequisites are done
+        if len(config_obj["modulators"])>1:
+            raise CLIError("Multiplexing modulators is not yet supported.")
+
+        modulator_objects=construct_modulators(config_obj.data)
+        # TODO: construct OFDM once that is complete
+        modulator_obj=modulator_objects[0]
+        if isinstance(modulator_obj,ASKModulator):
+            constellation_length=len(modulator_obj.amp_list)
+        elif isinstance(modulator_obj,FSKModulator):
+            constellation_length=len(modulator_obj.freq_list)
+        else:
+            raise CLIError("Modulator type is not yet supported.")
+
+        try:
+            datastream_decoder=decode_function_mappings[constellation_length]
+        except KeyError:
+            raise CLIError("Unsupported count of constellation values.")
+
+        self.line("Reading audio file...")
+        wavfile_fs, modulated_datastream = wavfile.read(input_file_name)
+        if wavfile_fs != config_obj["fs"].data:
+            raise CLIError("Sampling frequency mismatch in config and audio",
+                "error")
+        self.line("Demodulating audio...")
+        datastream=modulator_obj.demodulate(modulated_datastream)
+        bitstream=datastream_decoder(datastream)
+
+        self.line("Writing demodulated data...")
+        if config_obj["ecc"].data in ["none","raw"]:
+            pass
+        elif config_obj["ecc"].data in ["hamming_7_4"]:
+            bitstream=hamming_7_4.hamming_decode_7_4(bitstream)
+        else:
+            # Should never happen
+            raise CLIError("Invalid ECC mode found late; should have been caught earlier","error")
+
+        with open(output_file_name,"wb") as fil:
+            fil.write(bitstream)

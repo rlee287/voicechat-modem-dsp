@@ -54,11 +54,11 @@ class TxFile(ExtendedCommand):
             raise CLIError("Configuration file {} does not exist."
                 .format(config_file_name),"error")
 
-        self.confirm_file_writable(output_file_name)
-
         if not os.path.isfile(input_file_name):
             raise CLIError("Input file {} must exist."
                 .format(input_file_name),"error")
+
+        self.confirm_file_writable(output_file_name)
 
         has_header = not (self.option("no-header") or self.option("raw"))
         has_preamble = not (self.option("no-preamble") or self.option("raw"))

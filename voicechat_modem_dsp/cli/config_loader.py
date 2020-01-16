@@ -84,5 +84,5 @@ def construct_modulators(config_dict: TypingMap) -> TypingList[Modulator]:
             modulator_list.append(
                 FSKModulator(fs, amplitude, frequencies, baud))
         else: # Should never happen (would have been caught by revalidation)
-            raise ValueError("Mapping has invalid mode key")
+            raise ValueError("Mapping has invalid mode key") # pragma: no cover
     return modulator_list

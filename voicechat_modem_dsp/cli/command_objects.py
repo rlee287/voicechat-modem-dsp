@@ -109,7 +109,7 @@ class TxFile(ExtendedCommand):
             bitstream=hamming_7_4.hamming_encode_7_4(bitstream)
         else:
             # Should never happen
-            raise CLIError("Invalid ECC mode found late; should have been caught earlier","error")
+            raise CLIError("Invalid ECC mode found late; should have been caught earlier","error") # pragma: no cover
         datastream=datastream_encoder(bitstream)
         self.line("Modulating data...")
         modulated_datastream=modulator_obj.modulate(datastream)
@@ -196,7 +196,7 @@ class RxFile(ExtendedCommand):
             bitstream=hamming_7_4.hamming_decode_7_4(bitstream)
         else:
             # Should never happen
-            raise CLIError("Invalid ECC mode found late; should have been caught earlier","error")
+            raise CLIError("Invalid ECC mode found late; should have been caught earlier","error") # pragma: no cover
 
         with open(output_file_name,"wb") as fil:
             fil.write(bitstream)

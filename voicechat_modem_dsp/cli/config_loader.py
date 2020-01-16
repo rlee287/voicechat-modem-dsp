@@ -66,7 +66,7 @@ def parse_config_str(string: str) -> YAML:
 
 def construct_modulators(config_dict: TypingMap) -> TypingList[Modulator]:
     fs=config_dict["fs"]
-    modulator_list: TypingList[Modulator]=list()
+    modulator_list=list() # type: TypingList[Modulator]
     for modulator_config in config_dict["modulators"]:
         baud=modulator_config["baud"]
         mode=modulator_config["mode"]

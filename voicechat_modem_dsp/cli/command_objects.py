@@ -4,9 +4,7 @@ import functools
 import os
 from scipy.io import wavfile
 
-from strictyaml import YAMLValidationError
-
-from .config_loader import parse_config_str, construct_modulators
+from .config_loader import construct_modulators
 from .command_utils import CLIError, ExtendedCommand
 
 from ..modulators import ASKModulator, FSKModulator
@@ -69,13 +67,7 @@ class TxFile(ExtendedCommand):
 
         # Read in config file and check its validity
         self.line("Reading config file...")
-        try:
-            with open(config_file_name, "r") as fil:
-                config_text=fil.read()
-                config_obj=parse_config_str(config_text)
-        except YAMLValidationError as e:
-            # e.args[0] is the error message
-            raise CLIError(e.args[0],"error")
+        config_obj=self.parse_config_file(config_file_name)
         
         # TODO: obviously temporary; fix once prerequisites are done
         if len(config_obj["modulators"])>1:
@@ -153,13 +145,7 @@ class RxFile(ExtendedCommand):
             raise CLIError("Configuration file {} does not exist."
                 .format(config_file_name),"error")
 
-        try:
-            with open(config_file_name, "r") as fil:
-                config_text=fil.read()
-                config_obj=parse_config_str(config_text)
-        except YAMLValidationError as e:
-            # e.args[0] is the error message
-            raise CLIError(e.args[0],"error")
+        config_obj=self.parse_config_file(config_file_name)
 
         # TODO: obviously temporary; fix once prerequisites are done
         if len(config_obj["modulators"])>1:

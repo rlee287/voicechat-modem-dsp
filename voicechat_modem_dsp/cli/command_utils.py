@@ -1,6 +1,9 @@
 import cleo
 
+from strictyaml import YAMLValidationError
 import os.path
+
+from .config_loader import parse_config_str
 
 class CLIError(Exception):
     """
@@ -37,3 +40,14 @@ class ExtendedCommand(cleo.Command):
                     "Output file {} already exists "
                     "and program is in noninteractive mode."
                     .format(filename),"error")
+
+    @staticmethod
+    def parse_config_file(config_file_name):
+        try:
+            with open(config_file_name, "r") as fil:
+                config_text=fil.read()
+                config_obj=parse_config_str(config_text)
+        except YAMLValidationError as e:
+            # e.args[0] is the error message
+            raise CLIError(e.args[0],"error")
+        return config_obj

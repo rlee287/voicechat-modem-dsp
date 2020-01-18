@@ -6,7 +6,6 @@ class ModulationIntegrityWarning(UserWarning):
     """
     Warning to be raised when modulators cannot guarantee data accuracy
     """
-    pass
 
 def generate_timearray(fs, sample_count):
     """

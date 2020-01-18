@@ -6,7 +6,6 @@ class CLIError(Exception):
     """
     Error raised to exit from cleo.Command.handle early
     """
-    pass
 
 class FileExistsAndCannotOverwriteException(CLIError):
     """
@@ -14,7 +13,6 @@ class FileExistsAndCannotOverwriteException(CLIError):
 
     Subclass of CLIError
     """
-    pass
 
 class ExtendedCommand(cleo.Command):
     """cleo.Command extended with additional utility functions"""

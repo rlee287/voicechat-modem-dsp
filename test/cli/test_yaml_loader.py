@@ -1,21 +1,11 @@
 from voicechat_modem_dsp.cli.config_loader import parse_config_str, \
     construct_modulators
+from .testing_utils import DirectoryChanger, FileCleanup
 
 import glob
-import os
 from strictyaml import YAMLValidationError
 
 import pytest
-
-class DirectoryChanger:
-    def __init__(self, path):
-        self.oldpath=os.getcwd()
-        self.path=path
-    
-    def __enter__(self):
-        os.chdir(self.path)
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        os.chdir(self.oldpath)
 
 @pytest.mark.unit
 def test_load_doc_examples():

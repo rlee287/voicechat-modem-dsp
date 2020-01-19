@@ -18,7 +18,11 @@ class FileExistsAndCannotOverwriteException(CLIError):
     """
 
 class ExtendedCommand(cleo.Command):
-    """cleo.Command extended with additional utility functions"""
+    """
+    cleo.Command extended with additional utility functions
+    
+    abstract_should_not_be_seen
+    """
 
     """Confirm whether a file is writable and raise an exception if not"""
     def confirm_file_writable(self, filename: str) -> None:

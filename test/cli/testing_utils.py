@@ -19,3 +19,14 @@ class FileCleanup:
     def __exit__(self):
         assert os.path.isfile(self.filename)
         os.remove(self.filename)
+
+class MockIO:
+    def __init__(self, *, is_interactive, input_list):
+        self.has_interactive=is_interactive
+        self.input_list=input_list.copy()
+    
+    def is_interactive(self):
+        return self.has_interactive
+    
+    def confirm(self, question, default, true_answer_regex):
+        return self.input_list.pop(0)

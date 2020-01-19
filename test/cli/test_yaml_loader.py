@@ -1,5 +1,6 @@
 from voicechat_modem_dsp.cli.config_loader import parse_config_str, \
     construct_modulators
+from voicechat_modem_dsp.modulators import ASKModulator, FSKModulator
 from .testing_utils import DirectoryChanger, FileCleanup
 
 import glob
@@ -13,11 +14,21 @@ def test_load_doc_examples():
         for yaml_file in glob.iglob("*.yaml"):
             with open(yaml_file,"r") as fil:
                 config_text=fil.read()
-            # Just make sure this doesn't cause an error
-            # TODO: other tests that check specific attributes
+            # YAML is valid <=> no error in parsing
             config_obj=parse_config_str(config_text)
             modulator_list=construct_modulators(config_obj.data)
+
+            # TODO: remove length check once FDM is in place
             assert len(modulator_list)==1
+            # TODO: complete for other modes once done
+            if "ask" in yaml_file:
+                assert isinstance(modulator_list[0],ASKModulator)
+            elif "fsk" in yaml_file:
+                assert isinstance(modulator_list[0],FSKModulator)
+            elif "psk" in yaml_file:
+                pass
+            elif "qam" in yaml_file:
+                pass
 
 @pytest.mark.unit
 def test_load_doc_nonexamples():

@@ -2,8 +2,8 @@ import cleo
 
 from voicechat_modem_dsp.cli.command_utils import \
     ExtendedCommand, FileExistsAndCannotOverwriteException
-
-from .testing_utils import MockIO
+from voicechat_modem_dsp.cli.command_objects import TxFile, RxFile
+from .testing_utils import MockIO, FileCleanup
 import os
 
 import pytest
@@ -28,7 +28,7 @@ def test_extendedcmd_noninteractive():
         os.rmdir("nonsense")
 
 @pytest.mark.unit
-def test_file_extendedcmd_interactive():
+def test_extendedcmd_interactive():
     extended_cmd = ExtendedCommand()
     extended_cmd._io = MockIO(is_interactive=True, input_list=[False])
 
@@ -49,3 +49,71 @@ def test_file_extendedcmd_interactive():
     # Can write to existent file when confirmed
     extended_cmd._io = MockIO(is_interactive=True, input_list=[True])
     extended_cmd.confirm_file_writable("__init__.py")
+
+@pytest.mark.unit
+def test_roundtrip_modulation_cmd():
+    with FileCleanup("modulated.wav"):
+        with FileCleanup("demodulated.dat"):
+            application = cleo.Application()
+            application.add(TxFile())
+            application.add(RxFile())
+            tx_commands=" ".join(["--config docs/specs/examples/ask_1k.yaml",
+                "--output modulated.wav","--raw","test/cli/testing_utils.py"])
+
+            command_tx = application.find("transmit_file")
+            command_tx_tester = cleo.CommandTester(command_tx)
+            command_tx_tester.execute(tx_commands)
+
+            assert command_tx_tester.status_code == 0
+
+            rx_commands=" ".join(["--config docs/specs/examples/ask_1k.yaml",
+                "--output demodulated.dat","modulated.wav"])
+            command_rx = application.find("receive_file")
+            command_rx_tester = cleo.CommandTester(command_rx)
+            command_rx_tester.execute(rx_commands)
+
+            assert command_rx_tester.status_code == 0
+
+@pytest.mark.unit
+def test_improper_file_parameters():
+    application = cleo.Application()
+    application.add(TxFile())
+    application.add(RxFile())
+    tx_command_no_config=" ".join(["--output modulated.wav","--raw",
+        "test/cli/testing_utils.py"])
+    tx_command_config_nonexist=" ".join(["--output modulated.wav","--raw",
+        "--config nonexist","test/cli/testing_utils.py"])
+    tx_command_input_nonexist=" ".join([
+        "--config docs/specs/examples/ask_1k.yaml", "--output modulated.wav",
+        "--raw","nonexist"])
+
+    command_tx = application.find("transmit_file")
+    command_tx_tester = cleo.CommandTester(command_tx)
+
+    command_tx_tester.execute(tx_command_no_config)
+    assert command_tx_tester.status_code == 1
+
+    command_tx_tester.execute(tx_command_config_nonexist)
+    assert command_tx_tester.status_code == 1
+
+    command_tx_tester.execute(tx_command_input_nonexist)
+    assert command_tx_tester.status_code == 1
+
+    rx_command_no_config=" ".join(["--output demodulated.dat","input.wav"])
+    rx_command_config_nonexist=" ".join(["--output demodulated.dat",
+        "--config nonexist","input.wav"])
+    rx_command_input_nonexist=" ".join([
+        "--config docs/specs/examples/ask_1k.yaml", "--output demodulated.dat",
+        "nonexist.wav"])
+
+    command_rx = application.find("receive_file")
+    command_rx_tester = cleo.CommandTester(command_rx)
+
+    command_rx_tester.execute(rx_command_no_config)
+    assert command_rx_tester.status_code == 1
+
+    command_rx_tester.execute(rx_command_config_nonexist)
+    assert command_rx_tester.status_code == 1
+
+    command_rx_tester.execute(rx_command_input_nonexist)
+    assert command_rx_tester.status_code == 1

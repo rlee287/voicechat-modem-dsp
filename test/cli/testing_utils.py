@@ -16,7 +16,7 @@ class FileCleanup:
 
     def __enter__(self):
         assert not os.path.exists(self.filename)
-    def __exit__(self):
+    def __exit__(self, exc_type, exc_val, exc_tb):
         assert os.path.isfile(self.filename)
         os.remove(self.filename)
 

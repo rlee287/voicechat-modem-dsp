@@ -4,7 +4,7 @@ class DirectoryChanger:
     def __init__(self, path):
         self.oldpath=os.getcwd()
         self.path=path
-    
+
     def __enter__(self):
         os.chdir(self.path)
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -24,9 +24,9 @@ class MockIO:
     def __init__(self, *, is_interactive, input_list):
         self.has_interactive=is_interactive
         self.input_list=input_list.copy()
-    
+
     def is_interactive(self):
         return self.has_interactive
-    
     def confirm(self, question, default, true_answer_regex):
         return self.input_list.pop(0)
+

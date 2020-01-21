@@ -8,6 +8,9 @@ numpy = "*"
 scipy = "*"
 protobuf = "*"
 ipykernel = "*"
+cleo = "*"
+strictyaml = "*"
+matplotlib = "*"
 
 [dev-packages]
 pytest = "*"

@@ -1,7 +1,7 @@
 from .bitstream import read_bitstream_iterator, write_bitstream
 from .bitstream import readable_bytearr, writeable_bytearr
 
-from typing import List, Dict, Callable
+from typing import List, Sequence, Dict, Callable
 
 import base64
 
@@ -12,7 +12,7 @@ def base_2_encode(bitstream: readable_bytearr) -> List[int]:
         return_list.append(1 if bit else 0)
     return return_list
 
-def base_2_decode(datastream: List[int]) -> readable_bytearr:
+def base_2_decode(datastream: Sequence[int]) -> readable_bytearr:
     base_2_mapping={0:False, 1:True}
     if len(datastream)%8 != 0:
         raise ValueError("Inappropriate datastream length")
@@ -38,7 +38,7 @@ def base_4_encode(bitstream: readable_bytearr) -> List[int]:
         emit_symbol=not emit_symbol
     return return_list
 
-def base_4_decode(datastream: List[int]) -> readable_bytearr:
+def base_4_decode(datastream: Sequence[int]) -> readable_bytearr:
     base_4_mapping={0:(False,False),
                     1:(False,True),
                     2:(True,False),
@@ -77,7 +77,7 @@ def base_8_encode(bitstream: readable_bytearr) -> List[int]:
         return_list.append(rollover_counter)
     return return_list
 
-def base_8_decode(datastream: List[int]) -> readable_bytearr:
+def base_8_decode(datastream: Sequence[int]) -> readable_bytearr:
     base_8_mapping={0:(False,False,False),
                     1:(False,False,True),
                     2:(False,True,False),
@@ -110,7 +110,7 @@ def base_8_decode(datastream: List[int]) -> readable_bytearr:
 def base_16_encode(bitstream: readable_bytearr) -> List[int]:
     return [int(chr(c), 16) for c in base64.b16encode(bitstream)]
 
-def base_16_decode(datastream: List[int]) -> readable_bytearr:
+def base_16_decode(datastream: Sequence[int]) -> readable_bytearr:
     if len(datastream)%2!=0:
         raise ValueError("Inappropriate datastream length")
     for c in datastream:
@@ -129,7 +129,7 @@ def base_32_encode(bitstream: readable_bytearr) -> List[int]:
     # b32encode works properly -> KeyError impossible
     return [base_32_mapping[char] for char in base_32_encodestr]
 
-def base_32_decode(datastream: List[int]) -> readable_bytearr:
+def base_32_decode(datastream: Sequence[int]) -> readable_bytearr:
     # Convert to dict to avoid negative index wrapping
     base_32_mapping=dict(enumerate("ABCDEFGHIJKLMNOPQRSTUVWXYZ234567"))
     try:
@@ -154,7 +154,7 @@ def base_64_encode(bitstream: readable_bytearr) -> List[int]:
     # b32encode works properly -> KeyError impossible
     return [base_64_mapping[char] for char in base_64_encodestr]
 
-def base_64_decode(datastream: List[int]) -> readable_bytearr:
+def base_64_decode(datastream: Sequence[int]) -> readable_bytearr:
     # Convert to dict to avoid negative index wrapping
     base_64_mapping=dict(enumerate("ABCDEFGHIJKLMNOPQRSTUVWXYZ"
         "abcdefghijklmnopqrstuvwxyz0123456789+/"))
@@ -172,22 +172,9 @@ def base_64_decode(datastream: List[int]) -> readable_bytearr:
 def base_256_encode(bitstream: readable_bytearr) -> List[int]:
     return list(bitstream)
 
-def base_256_decode(datastream: List[int]) -> readable_bytearr:
+def base_256_decode(datastream: Sequence[int]) -> readable_bytearr:
     # Catch ValueError to provide our own message here
     try:
         return bytes(datastream)
     except ValueError:
         raise ValueError("Illegal symbol detected in datastream")
-
-# Convenience mapping to allow for lookup based on len(modulation_list)
-#encode_function_mappings: Dict[int,Callable[[readable_bytearr], List[int]]]
-#decode_function_mappings: Dict[int,Callable[[List[int]], readable_bytearr]]
-encode_function_mappings = {2:base_2_encode, 4:base_4_encode,
-                            8:base_8_encode, 16:base_16_encode,
-                            32:base_32_encode, 64:base_64_encode,
-                            256:base_256_encode}
-
-decode_function_mappings = {2:base_2_decode, 4:base_4_decode,
-                            8:base_8_decode, 16:base_16_decode,
-                            32:base_32_decode, 64:base_64_decode,
-                            256:base_256_decode}

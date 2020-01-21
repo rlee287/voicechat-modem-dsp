@@ -1,6 +1,6 @@
 from .encode_pad import *
 
-from typing import Dict, Callable, List
+from typing import Dict, Callable, Sequence
 from .bitstream import readable_bytearr
 
 # Convenience mapping to allow for lookup based on len(modulation_list)
@@ -13,6 +13,6 @@ decode_function_mappings= {2:base_2_decode, 4:base_4_decode,
                            8:base_8_decode, 16:base_16_decode,
                            32:base_32_decode, 64:base_64_decode,
                            256:base_256_decode
-    } # type: Dict[int,Callable[[List[int]], readable_bytearr]]
+    } # type: Dict[int,Callable[[Sequence[int]], readable_bytearr]]
 
 __all__=["encode_function_mappings","decode_function_mappings"]

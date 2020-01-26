@@ -1,6 +1,7 @@
 import random
 import warnings
 import numpy as np
+from scipy.signal import hilbert
 
 from voicechat_modem_dsp.encoders.encode_pad import *
 from voicechat_modem_dsp.modulators import ASKModulator, FSKModulator, \
@@ -113,8 +114,12 @@ def test_property_ask_integrity():
                 continue
 
         modulated_data=modulator.modulate(datastream)
-        modulator.demodulate(modulated_data)
-        demodulated_bundle=modulator.demodulate(modulated_data)
+
+        modulated_data_analytic=hilbert(modulated_data)
+        modulated_data_analytic*=np.exp(2j*np.pi*random.random())
+        modulated_data_phaseshifted=np.real(modulated_data_analytic)
+
+        demodulated_bundle=modulator.demodulate(modulated_data_phaseshifted)
         recovered_bitstream=base_16_decode(demodulated_bundle)
         count_run+=1
 

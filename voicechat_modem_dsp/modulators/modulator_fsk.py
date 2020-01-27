@@ -91,11 +91,12 @@ class FSKModulator(BaseModulator):
         interval_count=int(np.round(
             len(modulated_data)/samples_per_symbol))
         goertzel_results=list()
-        for i in range(interval_count):
-            transition_width=BaseModulator.sigma_mult_t*self._calculate_sigma
-            # Convert above time width into sample point width
-            transition_width*=self.fs
 
+        transition_width=BaseModulator.sigma_mult_t*self._calculate_sigma
+        # Convert above time width into sample point width
+        transition_width*=self.fs
+
+        for i in range(interval_count):
             interval_begin=i*samples_per_symbol
             # Perform min in order to account for floating point weirdness
             interval_end=min(interval_begin+samples_per_symbol,

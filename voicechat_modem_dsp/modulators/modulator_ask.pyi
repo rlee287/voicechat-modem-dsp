@@ -1,9 +1,9 @@
-from .modulator_base import Modulator
+from .modulator_base import BaseModulator
 from typing import Sequence, Dict, Tuple
 
 from numpy import ndarray
 
-class ASKModulator(Modulator):
+class ASKModulator(BaseModulator):
     fs: float = ...
     amp_list: Dict[int, float] = ...
     carrier_freq: float = ...

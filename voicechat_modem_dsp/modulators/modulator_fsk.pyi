@@ -1,9 +1,9 @@
-from .modulator_base import Modulator
+from .modulator_base import BaseModulator
 from typing import Sequence, Dict, Tuple
 
 from numpy import ndarray
 
-class FSKModulator(Modulator):
+class FSKModulator(BaseModulator):
     fs: float = ...
     freq_list: Dict[int, float] = ...
     amplitude: float = ...

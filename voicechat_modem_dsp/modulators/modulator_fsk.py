@@ -1,4 +1,4 @@
-from .modulator_base import Modulator
+from .modulator_base import BaseModulator
 
 from . import modulator_utils
 from .modulator_utils import ModulationIntegrityWarning
@@ -10,7 +10,7 @@ from scipy.cluster.vq import vq
 
 import warnings
 
-class FSKModulator(Modulator):
+class FSKModulator(BaseModulator):
     def __init__(self, fs, amplitude, freq_list, baud):
         if min(freq_list)<=0:
             raise ValueError("Invalid frequencies given")
@@ -42,10 +42,11 @@ class FSKModulator(Modulator):
     @property
     def _calculate_sigma(self):
         #sigma_t = w/4k, at most half of the pulse is smoothed away
-        gaussian_sigma_t=(1/self.baud)/(4*Modulator.sigma_mult_t)
+        gaussian_sigma_t=(1/self.baud)/(4*BaseModulator.sigma_mult_t)
         # At most 1/4 of the highest frequency cycle is smoothed away
         # TODO: test possibilities that make sense for FSK
-        gaussian_sigma_f=0.25*(2*np.pi/max(self.freq_list.values()))/Modulator.sigma_mult_t
+        gaussian_sigma_f=0.25*(2*np.pi/max(self.freq_list.values()))/ \
+            BaseModulator.sigma_mult_t
         return min(gaussian_sigma_t,gaussian_sigma_f)
 
     def modulate(self, datastream):
@@ -91,7 +92,7 @@ class FSKModulator(Modulator):
             len(modulated_data)/samples_per_symbol))
         goertzel_results=list()
         for i in range(interval_count):
-            transition_width=Modulator.sigma_mult_t*self._calculate_sigma
+            transition_width=BaseModulator.sigma_mult_t*self._calculate_sigma
             # Convert above time width into sample point width
             transition_width*=self.fs
 

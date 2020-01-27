@@ -115,6 +115,9 @@ def test_property_ask_integrity():
 
         modulated_data=modulator.modulate(datastream)
 
+        # Imaginary part of analytic signal is phase shifted 90 degrees
+        # Randomize the phase of the modulated signal
+        # Demodulation should not care about signal phase
         modulated_data_analytic=hilbert(modulated_data)
         modulated_data_analytic*=np.exp(2j*np.pi*random.random())
         modulated_data_phaseshifted=np.real(modulated_data_analytic)

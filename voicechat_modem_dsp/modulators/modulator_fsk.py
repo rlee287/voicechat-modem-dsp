@@ -104,10 +104,10 @@ class FSKModulator(BaseModulator):
 
             # Shrink interval by previously calculated transition width
             # Skip doing so for first and last sample
-            if i!=0:
-                interval_begin+=transition_width
-            if i!=interval_count-1:
+            if i==0 or i==interval_count-2:
                 interval_end-=transition_width
+            if i==1 or i==interval_count-1:
+                interval_begin+=transition_width
             # Round transition boundaries to get integer indexes
             # TODO: find elegant way to handle noninteger interval bounds
             interval_begin=int(np.round(interval_begin))

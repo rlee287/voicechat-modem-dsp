@@ -67,7 +67,7 @@ class FSKModulator(BaseModulator):
         interpolated_frequency=modulator_utils.previous_resample_interpolate(
             time_array, self.baud, frequency_data)
 
-        # Construct smoothed frequency mask
+        # Construct smoothed signal mask
         # TODO: be smarter about only convolving the edges
         amplitude_mask=np.asarray([0]+[self.amplitude]*len(datastream)+[0])
         interpolated_amplitude=modulator_utils.previous_resample_interpolate(

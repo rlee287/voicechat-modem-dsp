@@ -37,6 +37,17 @@ def test_invalid_modspecific():
     with pytest.warns(ModulationIntegrityWarning):
         bad_modulator=ASKModulator(2000,880,np.geomspace(0.2,1,256),40)
 
+    with pytest.raises(ValueError, match=r"Invalid phases.+"):
+        bad_modulator=PSKModulator(1000,200,1,np.linspace(-1,10,16),20)
+    with pytest.raises(ValueError, match=r"amplitude must be positive.+"):
+        bad_modulator=PSKModulator(1000,200,-1,np.linspace(0,3*np.pi/2,16),20)
+    with pytest.warns(ModulationIntegrityWarning):
+        bad_modulator=PSKModulator(1000,200,1,np.linspace(0,0.1,16),50)
+    with pytest.warns(ModulationIntegrityWarning):
+        bad_modulator=PSKModulator(2000,880,1,np.linspace(0,3*np.pi/2,16),20)
+    with pytest.warns(ModulationIntegrityWarning):
+        bad_modulator=PSKModulator(1000,200,0.02,np.linspace(0,0.1,16),50)
+
     with pytest.raises(ValueError, match=r"Invalid frequencies.+"):
         bad_modulator=FSKModulator(1000,1,np.linspace(-1,1000,16),500)
     with pytest.raises(ValueError, match=r"amplitude must be positive.+"):

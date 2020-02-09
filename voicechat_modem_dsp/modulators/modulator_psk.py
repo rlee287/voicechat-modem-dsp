@@ -55,7 +55,6 @@ class PSKModulator(BaseModulator):
         return min(gaussian_sigma_t,gaussian_sigma_f)
 
     def modulate(self, datastream):
-        # TODO: complete
         samples_per_symbol=modulator_utils.samples_per_symbol(self.fs,self.baud)
         gaussian_sigma=self._calculate_sigma
         gaussian_window=modulator_utils.gaussian_window(self.fs,gaussian_sigma)
@@ -91,11 +90,12 @@ class PSKModulator(BaseModulator):
             np.exp(2*np.pi*1j*self.carrier_freq*time_array))
 
     def demodulate(self, modulated_data):
-        # TODO: complete
+        # TODO: copy this over to the QAM modulator
+        # This is close enough to maybe allow object composition
         samples_per_symbol=modulator_utils.samples_per_symbol(self.fs,self.baud)
         time_array=modulator_utils.generate_timearray(
             self.fs,len(modulated_data))
-        demod_phase=2*modulated_data*np.exp(2*np.pi*1j*self.carrier_freq*time_array)
+        demod_signal=2*modulated_data*np.exp(2*np.pi*1j*self.carrier_freq*time_array)
 
         # Compute filter boundaries
         # Lowend is half the baud (i.e. the fundamental of the data)
@@ -111,8 +111,7 @@ class PSKModulator(BaseModulator):
         fir_filt=modulator_utils.lowpass_fir_filter(self.fs, filter_lowend, filter_highend)
         filt_delay=(len(fir_filt)-1)//2
 
-        filtered_demod_phase=np.angle(signal.lfilter(fir_filt,1,demod_phase))
-        filtered_demod_phase[filtered_demod_phase<0]+=2*np.pi
+        filtered_demod_signal=signal.lfilter(fir_filt,1,demod_signal)
 
         # Extract the original amplitudes via averaging of plateau
 
@@ -120,7 +119,7 @@ class PSKModulator(BaseModulator):
         interval_count=int(np.round(
             len(modulated_data)/samples_per_symbol))
         interval_offset=filt_delay
-        list_phases=list()
+        list_constellation=list()
 
         transition_width=BaseModulator.sigma_mult_t*self._calculate_sigma
         # Convert above time width into sample point width
@@ -139,18 +138,19 @@ class PSKModulator(BaseModulator):
             if i!=interval_count-1:
                 interval_end-=transition_width
             # Find the amplitude by averaging
-            list_phases.append(modulator_utils.average_interval_data(filtered_demod_phase, interval_begin, interval_end))
+            list_constellation.append(modulator_utils.average_interval_data(filtered_demod_signal, interval_begin, interval_end))
 
-        list_phases=list_phases.copy()
-        # Convert amplitude observations and mapping into vq arguments
+        list_constellation=list_constellation.copy()
+        # Convert observations and mapping into vq arguments
         # Insert the null symbol 0 to account for beginning and end
-        list_phases=[[phase] for phase in list_phases]
-        code_book=[self.amp_list[i] for i in range(len(self.amp_list))]
-        code_book.insert(0,0.0)
-        code_book=[[obs] for obs in code_book]
+        list_constellation=[[np.real(point),-np.imag(point)] for point in list_constellation]
+        code_book=[self.amplitude*np.exp(1j*self.phase_list[i])
+                    for i in range(len(self.phase_list))]
+        code_book.insert(0,0+0j)
+        code_book=[[np.real(obs),np.imag(obs)] for obs in code_book]
 
         # Map averages to amplitude points
-        vector_cluster=vq(list_phases,code_book)
+        vector_cluster=vq(list_constellation,code_book)
         # Subtract data points by 1 and remove 0 padding
         # Neat side effect: -1 is an invalid data point
         datastream=vector_cluster[0]-1

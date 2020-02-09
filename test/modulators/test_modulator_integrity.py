@@ -4,8 +4,8 @@ import numpy as np
 from scipy.signal import hilbert
 
 from voicechat_modem_dsp.encoders.encode_pad import *
-from voicechat_modem_dsp.modulators import ASKModulator, FSKModulator, \
-    ModulationIntegrityWarning
+from voicechat_modem_dsp.modulators import ModulationIntegrityWarning, \
+    ASKModulator, FSKModulator, PSKModulator
 
 import pytest
 
@@ -123,6 +123,38 @@ def test_property_ask_integrity():
         modulated_data_phaseshifted=np.real(modulated_data_analytic)
 
         demodulated_bundle=modulator.demodulate(modulated_data_phaseshifted)
+        recovered_bitstream=base_16_decode(demodulated_bundle)
+        count_run+=1
+
+        assert bitstream==recovered_bitstream
+
+@pytest.mark.property
+def test_property_psk_integrity():
+    phase_list=list(np.linspace(0,2*np.pi,16,endpoint=False))
+    count_run=0
+    while count_run<256:
+        # Shuffle as opposed to complete random to test all 0x00-0xff
+        list_data=list(range(256))
+        random.shuffle(list_data)
+        bitstream=bytes(list_data)
+        datastream=base_16_encode(bitstream)
+
+        sampling_freq=get_rand_float(8000,48000)
+        carrier_freq=get_rand_float(256,sampling_freq/2)
+        baud_rate=get_rand_float(128,carrier_freq/4)
+        amplitude=get_rand_float(0.1,1)
+
+        with warnings.catch_warnings():
+            warnings.simplefilter("error",category=ModulationIntegrityWarning)
+            try:
+                modulator=PSKModulator(sampling_freq,
+                    carrier_freq,amplitude,phase_list,baud_rate)
+            except ModulationIntegrityWarning:
+                continue
+
+        modulated_data=modulator.modulate(datastream)
+        demodulated_bundle=modulator.demodulate(modulated_data)
+
         recovered_bitstream=base_16_decode(demodulated_bundle)
         count_run+=1
 

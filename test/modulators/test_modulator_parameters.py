@@ -2,8 +2,8 @@ import warnings
 import numpy as np
 
 from voicechat_modem_dsp.encoders.encode_pad import *
-from voicechat_modem_dsp.modulators import ASKModulator, FSKModulator, \
-    ModulationIntegrityWarning
+from voicechat_modem_dsp.modulators import ModulationIntegrityWarning, \
+    ASKModulator, FSKModulator, PSKModulator
 
 import pytest
 
@@ -14,6 +14,11 @@ def test_invalid_nyquist():
     with pytest.raises(ValueError, match=r"Baud is too high.+"):
         bad_modulator=ASKModulator(1000,100,np.linspace(0.2,1,8),80)
 
+    with pytest.raises(ValueError, match=r"Carrier frequency is too high.+"):
+        bad_modulator=PSKModulator(1000,600,1,np.linspace(0,np.pi,8),20)
+    with pytest.raises(ValueError, match=r"Baud is too high.+"):
+        bad_modulator=PSKModulator(1000,100,1,np.linspace(0,np.pi,8),80)
+
     with pytest.raises(ValueError, match=r"Baud is too high.+"):
         bad_modulator=FSKModulator(1000,1,np.linspace(200,1000,8),800)
     with pytest.raises(ValueError, match=r"Maximum frequency is too high.+"):
@@ -21,6 +26,7 @@ def test_invalid_nyquist():
 
     with pytest.warns(ModulationIntegrityWarning):
         bad_modulator=ASKModulator(900,400,np.linspace(0.2,1,8),100)
+        bad_modulator=PSKModulator(900,400,1,np.linspace(0,np.pi,8),100)
 
 @pytest.mark.unit
 def test_invalid_modspecific():

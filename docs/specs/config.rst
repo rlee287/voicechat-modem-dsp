@@ -98,5 +98,5 @@ This modulation is similar to the amateur radio PSK31 mode. However, it uses
 a more rudimentary Hamming 7,4 ECC and Gaussian pulse shaping, as opposed to
 a raised cosine filter.
 
-..literalinclude:: examples/psk31.yaml
+.. literalinclude:: examples/psk31.yaml
     :language: yaml

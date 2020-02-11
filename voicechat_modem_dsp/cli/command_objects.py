@@ -7,7 +7,7 @@ from scipy.io import wavfile
 from .config_loader import construct_modulators
 from .command_utils import CLIError, ExtendedCommand
 
-from ..modulators import ASKModulator, FSKModulator
+from ..modulators import ASKModulator, PSKModulator, FSKModulator
 from ..encoders import encode_function_mappings, decode_function_mappings
 from ..encoders.ecc import hamming_7_4
 
@@ -84,6 +84,8 @@ class TxFile(ExtendedCommand):
             constellation_length=len(modulator_obj.amp_list)
         elif isinstance(modulator_obj,FSKModulator):
             constellation_length=len(modulator_obj.freq_list)
+        elif isinstance(modulator_obj,PSKModulator):
+            constellation_length=len(modulator_obj.phase_list)
         else:
             raise CLIError("Modulator type is not yet supported.")
 
@@ -158,6 +160,8 @@ class RxFile(ExtendedCommand):
             constellation_length=len(modulator_obj.amp_list)
         elif isinstance(modulator_obj,FSKModulator):
             constellation_length=len(modulator_obj.freq_list)
+        elif isinstance(modulator_obj,PSKModulator):
+            constellation_length=len(modulator_obj.phase_list)
         else:
             raise CLIError("Modulator type is not yet supported.")
 

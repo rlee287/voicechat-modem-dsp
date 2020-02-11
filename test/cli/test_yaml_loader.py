@@ -1,7 +1,8 @@
 from voicechat_modem_dsp.cli.config_loader import parse_config_str, \
     construct_modulators
 from voicechat_modem_dsp.cli.command_utils import CLIError, ExtendedCommand
-from voicechat_modem_dsp.modulators import ASKModulator, FSKModulator
+from voicechat_modem_dsp.modulators import ASKModulator, PSKModulator, \
+    FSKModulator
 from .testing_utils import DirectoryChanger, FileCleanup
 
 import glob
@@ -27,7 +28,7 @@ def test_load_doc_examples():
             elif "fsk" in yaml_file:
                 assert isinstance(modulator_list[0],FSKModulator)
             elif "psk" in yaml_file:
-                pass
+                assert isinstance(modulator_list[0],PSKModulator)
             elif "qam" in yaml_file:
                 pass
 
@@ -47,7 +48,7 @@ def test_load_doc_examples_staticmethod():
             elif "fsk" in yaml_file:
                 assert isinstance(modulator_list[0],FSKModulator)
             elif "psk" in yaml_file:
-                pass
+                assert isinstance(modulator_list[0],PSKModulator)
             elif "qam" in yaml_file:
                 pass
 

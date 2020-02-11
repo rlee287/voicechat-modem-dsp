@@ -29,10 +29,10 @@ Supported modulation modes are
 
 - Amplitude Shift Keying (``ask``)
 - Frequency Shift Keying (``fsk``)
+- Phase Shift Keying (``psk``)
 
 Modes that will be supported in the future are
 
-- Phase Shift Keying (``psk``)
 - Quadrature Amplitude Modulation (``qam``)
 
 Amplitude Shift Keying
@@ -89,4 +89,14 @@ Example Files
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. literalinclude:: examples/ask_1k.yaml
+    :language: yaml
+
+31.25 baud PSK
+~~~~~~~~~~~~~~
+
+This modulation is similar to the amateur radio PSK31 mode. However, it uses
+a more rudimentary Hamming 7,4 ECC and Gaussian pulse shaping, as opposed to
+a raised cosine filter.
+
+..literalinclude:: examples/psk31.yaml
     :language: yaml

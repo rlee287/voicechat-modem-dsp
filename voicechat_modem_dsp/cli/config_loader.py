@@ -3,10 +3,12 @@ from strictyaml import Map, Str, Float, Enum, Any, UniqueSeq, CommaSeparated
 from strictyaml import load, YAML, YAMLValidationError
 
 from .yaml_schema_validators import Complex
-from ..modulators import ASKModulator, FSKModulator, BaseModulator
+from ..modulators import ASKModulator, PSKModulator, FSKModulator, BaseModulator
 
 from typing import List as TypingList
 from typing import Mapping as TypingMap
+
+from numpy import pi
 
 init_config_schema=Map({
     "version": Str(),
@@ -75,7 +77,10 @@ def construct_modulators(config_dict: TypingMap) -> TypingList[BaseModulator]:
             amplitudes=modulator_config["amplitudes"]
             modulator_list.append(ASKModulator(fs, carrier, amplitudes, baud))
         elif mode=="psk":
-            pass
+            carrier=modulator_config["carrier"]
+            phases=modulator_config["phases"]
+            phases=[2*pi*phase for phase in phases]
+            modulator_list.append(PSKModulator(fs, carrier, 1, phases, baud))
         elif mode=="qam":
             pass
         elif mode=="fsk":

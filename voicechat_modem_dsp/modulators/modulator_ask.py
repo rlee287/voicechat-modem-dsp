@@ -125,7 +125,6 @@ class ASKModulator(BaseModulator):
             # Find the amplitude by averaging
             list_amplitudes.append(modulator_utils.average_interval_data(filtered_demod_amplitude, interval_begin, interval_end))
 
-        list_amplitudes_copy=list_amplitudes.copy()
         # Convert amplitude observations and mapping into vq arguments
         # Insert the null symbol 0 to account for beginning and end
         list_amplitudes=[[amplitude] for amplitude in list_amplitudes]

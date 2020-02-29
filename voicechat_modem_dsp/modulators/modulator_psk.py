@@ -138,12 +138,13 @@ class PSKModulator(BaseModulator):
             if i!=interval_count-1:
                 interval_end-=transition_width
             # Find the amplitude by averaging
-            list_constellation.append(modulator_utils.average_interval_data(filtered_demod_signal, interval_begin, interval_end))
+            avg=modulator_utils.average_interval_data(filtered_demod_signal, 
+                interval_begin, interval_end)
+            list_constellation.append(np.conj(avg))
 
-        list_constellation=list_constellation.copy()
         # Convert observations and mapping into vq arguments
         # Insert the null symbol 0 to account for beginning and end
-        list_constellation=[[np.real(point),-np.imag(point)] for point in list_constellation]
+        list_constellation=[[np.real(point),np.imag(point)] for point in list_constellation]
         code_book=[self.amplitude*np.exp(1j*self.phase_list[i])
                     for i in range(len(self.phase_list))]
         code_book.insert(0,0+0j)

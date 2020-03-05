@@ -3,7 +3,7 @@ import numpy as np
 
 from voicechat_modem_dsp.encoders.encode_pad import *
 from voicechat_modem_dsp.modulators import ModulationIntegrityWarning, \
-    ASKModulator, FSKModulator, PSKModulator
+    ASKModulator, FSKModulator, PSKModulator, QAMModulator
 
 import pytest
 
@@ -18,6 +18,11 @@ def test_invalid_nyquist():
         bad_modulator=PSKModulator(1000,600,1,np.linspace(0,np.pi,8),20)
     with pytest.raises(ValueError, match=r"Baud is too high.+"):
         bad_modulator=PSKModulator(1000,100,1,np.linspace(0,np.pi,8),80)
+
+    with pytest.raises(ValueError, match=r"Carrier frequency is too high.+"):
+        bad_modulator=QAMModulator(1000,600,np.linspace(0.2,1,8),20)
+    with pytest.raises(ValueError, match=r"Baud is too high.+"):
+        bad_modulator=QAMModulator(1000,100,np.linspace(0.2,1,8),80)
 
     with pytest.raises(ValueError, match=r"Baud is too high.+"):
         bad_modulator=FSKModulator(1000,1,np.linspace(200,1000,8),800)
@@ -47,6 +52,9 @@ def test_invalid_modspecific():
         bad_modulator=PSKModulator(2000,880,1,np.linspace(0,3*np.pi/2,16),20)
     with pytest.warns(ModulationIntegrityWarning):
         bad_modulator=PSKModulator(1000,200,0.02,np.linspace(0,0.1,16),50)
+
+    with pytest.raises(ValueError, match=r"of constellation points.+"):
+        bad_modulator=QAMModulator(1000,200,[2,4,-2j,1+1j],50)
 
     with pytest.raises(ValueError, match=r"Invalid frequencies.+"):
         bad_modulator=FSKModulator(1000,1,np.linspace(-1,1000,16),500)

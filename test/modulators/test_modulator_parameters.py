@@ -55,6 +55,10 @@ def test_invalid_modspecific():
 
     with pytest.raises(ValueError, match=r"of constellation points.+"):
         bad_modulator=QAMModulator(1000,200,[2,4,-2j,1+1j],50)
+    with pytest.warns(ModulationIntegrityWarning):
+        bad_modulator=QAMModulator(2000,880,np.geomspace(0.2,1,256),40)
+    with pytest.warns(ModulationIntegrityWarning):
+        bad_modulator=QAMModulator(2000,880,[0.05,1j],80)
 
     with pytest.raises(ValueError, match=r"Invalid frequencies.+"):
         bad_modulator=FSKModulator(1000,1,np.linspace(-1,1000,16),500)

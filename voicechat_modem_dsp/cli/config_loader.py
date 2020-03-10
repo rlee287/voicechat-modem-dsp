@@ -3,7 +3,8 @@ from strictyaml import Map, Str, Float, Enum, Any, UniqueSeq, CommaSeparated
 from strictyaml import load, YAML, YAMLValidationError
 
 from .yaml_schema_validators import Complex
-from ..modulators import ASKModulator, PSKModulator, FSKModulator, BaseModulator
+from ..modulators import ASKModulator, PSKModulator, QAMModulator, \
+    FSKModulator, BaseModulator
 
 from typing import List as TypingList
 from typing import Mapping as TypingMap
@@ -82,7 +83,9 @@ def construct_modulators(config_dict: TypingMap) -> TypingList[BaseModulator]:
             phases=[2*pi*phase for phase in phases]
             modulator_list.append(PSKModulator(fs, carrier, 1, phases, baud))
         elif mode=="qam":
-            pass
+            carrier=modulator_config["carrier"]
+            constellation=modulator_config["constellation"]
+            modulator_list.append(QAMModulator(fs, carrier, constellation, baud))
         elif mode=="fsk":
             amplitude=modulator_config["amplitude"]
             frequencies=modulator_config["frequencies"]

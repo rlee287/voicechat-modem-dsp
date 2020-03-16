@@ -57,7 +57,7 @@ class FSKModulator(BaseModulator):
         # Map datastream to frequencies and pad on both ends
         # Exact padding does not matter because of amplitude shaping
         frequency_data = np.pad([self.freq_list[datum] for datum in datastream],
-            1,mode="constant",constant_values=0)
+            1,mode="edge")
 
         # Upsample frequency to actual sampling rate
         interp_sample_count=int(np.ceil(

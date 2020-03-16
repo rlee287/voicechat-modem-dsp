@@ -96,7 +96,13 @@ Example Files
 
 This modulation is similar to the amateur radio PSK31 mode. However, it uses
 a more rudimentary Hamming 7,4 ECC and Gaussian pulse shaping, as opposed to
-a raised cosine filter.
+a raised cosine filter and more advanced ECC methods.
 
 .. literalinclude:: examples/psk31.yaml
+    :language: yaml
+
+2048 bits/second QAM Modulation
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. literalinclude:: examples/qam_1k.yaml
     :language: yaml

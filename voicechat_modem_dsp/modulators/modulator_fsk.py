@@ -13,7 +13,7 @@ import warnings
 class FSKModulator(BaseModulator):
     def __init__(self, fs, amplitude, freq_list, baud):
         if min(freq_list)<=0:
-            raise ValueError("Invalid frequencies given")
+            raise ValueError("Frequencies must be positive")
         if baud>min(freq_list):
             raise ValueError("Baud is too high to be modulated "+
                              "using given frequencies")

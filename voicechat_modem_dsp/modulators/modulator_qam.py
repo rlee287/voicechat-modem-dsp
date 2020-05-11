@@ -11,6 +11,8 @@ import warnings
 
 class QAMModulator(BaseModulator):
     def __init__(self, fs, carrier, constellation_list, baud):
+        if carrier<=0:
+            raise ValueError("Frequency of carrier must be positive")
         if baud>=0.5*carrier:
             raise ValueError("Baud is too high to be modulated "+
                              "using carrier frequency")

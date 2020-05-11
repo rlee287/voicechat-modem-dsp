@@ -60,7 +60,7 @@ def test_invalid_modspecific():
     with pytest.warns(ModulationIntegrityWarning):
         bad_modulator=QAMModulator(2000,880,[0.05,1j],80)
 
-    with pytest.raises(ValueError, match=r"Invalid frequencies.+"):
+    with pytest.raises(ValueError, match=r"Frequencies.+positive.?"):
         bad_modulator=FSKModulator(1000,1,np.linspace(-1,1000,16),500)
     with pytest.raises(ValueError, match=r"amplitude must be positive.+"):
         bad_modulator=FSKModulator(1000,-1,np.linspace(100,200,16),20)

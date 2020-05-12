@@ -109,10 +109,11 @@ class PSKModulator(BaseModulator):
         if carrier_refl-4000>self.carrier_freq:
             filter_highend=carrier_refl-4000
 
-        # Construct FIR filter, filter demodulated signal, and discard phase
+        # Construct FIR filter, filter demodulated signal
         fir_filt=modulator_utils.lowpass_fir_filter(self.fs, filter_lowend, filter_highend)
         filt_delay=(len(fir_filt)-1)//2
-
+        # First append filt_delay number of zeros to incoming signal
+        demod_signal=np.pad(demod_signal,(0,filt_delay))
         filtered_demod_signal=signal.lfilter(fir_filt,1,demod_signal)
 
         # Extract the original amplitudes via averaging of plateau

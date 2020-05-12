@@ -97,7 +97,8 @@ class ASKModulator(BaseModulator):
         # Construct FIR filter, filter demodulated signal, and discard phase
         fir_filt=modulator_utils.lowpass_fir_filter(self.fs, filter_lowend, filter_highend)
         filt_delay=(len(fir_filt)-1)//2
-
+        # First append filt_delay number of zeros to incoming signal
+        demod_signal=np.pad(demod_signal,(0,filt_delay))
         filtered_demod_amplitude=np.abs(signal.lfilter(fir_filt,1,demod_amplitude))
 
         # Extract the original amplitudes via averaging of plateau

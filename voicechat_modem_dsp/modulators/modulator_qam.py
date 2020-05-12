@@ -72,14 +72,14 @@ class QAMModulator(BaseModulator):
         constellation_data = np.pad([self.constellation_list[datum] for datum in datastream],
             1,mode="constant",constant_values=0+0j)
 
-        # Upsample amplitude to actual sampling rate
+        # Upsample data to actual sampling rate
         interp_sample_count=int(np.ceil(
             len(constellation_data)*samples_per_symbol))
         time_array=modulator_utils.generate_timearray(
             self.fs,interp_sample_count)
         interpolated_quad=modulator_utils.previous_resample_interpolate(
             time_array, self.baud, constellation_data)
-        # Smooth phases with Gaussian kernel after mapping to complex plane
+        # Smooth values with Gaussian kernel after mapping to complex plane
         shaped_quad=signal.convolve(interpolated_quad,gaussian_window,
             "same",method="fft")
 
@@ -88,7 +88,7 @@ class QAMModulator(BaseModulator):
             np.exp(2*np.pi*1j*self.carrier_freq*time_array))
 
     def demodulate(self, modulated_data):
-        # TODO: copy this over to the QAM modulator
+        # TODO: copy this over to the phase modulator
         # This is close enough to maybe allow object composition
         samples_per_symbol=modulator_utils.samples_per_symbol(self.fs,self.baud)
         time_array=modulator_utils.generate_timearray(
@@ -105,10 +105,11 @@ class QAMModulator(BaseModulator):
         if carrier_refl-4000>self.carrier_freq:
             filter_highend=carrier_refl-4000
 
-        # Construct FIR filter, filter demodulated signal, and discard phase
+        # Construct FIR filter and filter demodulated signal
         fir_filt=modulator_utils.lowpass_fir_filter(self.fs, filter_lowend, filter_highend)
         filt_delay=(len(fir_filt)-1)//2
-
+        # First append filt_delay number of zeros to incoming signal
+        demod_signal=np.pad(demod_signal,(0,filt_delay))
         filtered_demod_signal=signal.lfilter(fir_filt,1,demod_signal)
 
         # Extract the original amplitudes via averaging of plateau

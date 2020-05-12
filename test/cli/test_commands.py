@@ -4,6 +4,7 @@ from voicechat_modem_dsp.cli.command_utils import \
     ExtendedCommand, FileExistsAndCannotOverwriteException
 from voicechat_modem_dsp.cli.command_objects import TxFile, RxFile
 from .testing_utils import MockIO, FileCleanup
+import glob
 import os
 
 import pytest
@@ -52,27 +53,30 @@ def test_extendedcmd_interactive():
 
 @pytest.mark.unit
 def test_roundtrip_modulation_cmd():
-    with FileCleanup("modulated.wav"):
-        with FileCleanup("demodulated.dat"):
-            application = cleo.Application()
-            application.add(TxFile())
-            application.add(RxFile())
-            tx_commands=" ".join(["--config docs/specs/examples/ask_1k.yaml",
-                "--output modulated.wav","--raw","test/cli/testing_utils.py"])
+    configs_valid=glob.glob("docs/specs/examples/*.yaml")
+    file_input="mypy.ini"
+    for config in configs_valid:
+        with FileCleanup("modulated.wav"):
+            with FileCleanup("demodulated.dat"):
+                application = cleo.Application()
+                application.add(TxFile())
+                application.add(RxFile())
+                tx_commands=" ".join(["--config "+config,
+                    "--output modulated.wav","--raw",file_input])
 
-            command_tx = application.find("transmit_file")
-            command_tx_tester = cleo.CommandTester(command_tx)
-            command_tx_tester.execute(tx_commands)
+                command_tx = application.find("transmit_file")
+                command_tx_tester = cleo.CommandTester(command_tx)
+                command_tx_tester.execute(tx_commands)
 
-            assert command_tx_tester.status_code == 0
+                assert command_tx_tester.status_code == 0
 
-            rx_commands=" ".join(["--config docs/specs/examples/ask_1k.yaml",
-                "--output demodulated.dat","modulated.wav"])
-            command_rx = application.find("receive_file")
-            command_rx_tester = cleo.CommandTester(command_rx)
-            command_rx_tester.execute(rx_commands)
+                rx_commands=" ".join(["--config "+config,
+                    "--output demodulated.dat","modulated.wav"])
+                command_rx = application.find("receive_file")
+                command_rx_tester = cleo.CommandTester(command_rx)
+                command_rx_tester.execute(rx_commands)
 
-            assert command_rx_tester.status_code == 0
+                assert command_rx_tester.status_code == 0
 
 @pytest.mark.unit
 def test_improper_file_parameters():

@@ -31,6 +31,8 @@ def test_load_doc_examples():
                 assert isinstance(modulator_list[0],PSKModulator)
             elif "qam" in yaml_file:
                 assert isinstance(modulator_list[0],QAMModulator)
+            else:
+                raise ValueError("Invalid modulator type in examples!") # pragma: no cover
 
 @pytest.mark.unit
 def test_load_doc_examples_staticmethod():
@@ -51,6 +53,8 @@ def test_load_doc_examples_staticmethod():
                 assert isinstance(modulator_list[0],PSKModulator)
             elif "qam" in yaml_file:
                 assert isinstance(modulator_list[0],QAMModulator)
+            else:
+                raise ValueError("Invalid modulator type in examples!") # pragma: no cover
 
 @pytest.mark.unit
 def test_load_doc_nonexamples():

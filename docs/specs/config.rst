@@ -30,9 +30,6 @@ Supported modulation modes are
 - Amplitude Shift Keying (``ask``)
 - Frequency Shift Keying (``fsk``)
 - Phase Shift Keying (``psk``)
-
-Modes that will be supported in the future are
-
 - Quadrature Amplitude Modulation (``qam``)
 
 Amplitude Shift Keying

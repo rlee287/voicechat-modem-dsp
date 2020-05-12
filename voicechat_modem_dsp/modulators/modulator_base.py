@@ -13,6 +13,7 @@ class BaseModulator(ABC):
     sigma_mult_t=2.89
     # norm.isf(0.0001)
     sigma_mult_f=3.72
+    fs: float
 
     @abstractmethod
     def modulate(self, datastream: Sequence[int]) -> ndarray:

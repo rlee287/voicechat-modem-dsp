@@ -10,13 +10,24 @@ def generate_yaml(val):
     return "complex: {}".format(val)
 
 @pytest.mark.unit
-def test_complex_cartesian_valid():
+def test_complex_valid():
     yaml_str=generate_yaml(1+1j)
     yaml_obj=load(yaml_str,schema=complex_schema)
     assert yaml_obj["complex"].data==1+1j
     yaml_str_2=generate_yaml("(1,0.5)")
     yaml_obj_2=load(yaml_str_2,schema=complex_schema)
     assert yaml_obj_2["complex"].data.real==-1
+    assert abs(yaml_obj_2["complex"].data.imag-0)<1e-10
+
+@pytest.mark.unit
+def test_complex_pure_valid():
+    yaml_str=generate_yaml(1)
+    yaml_obj=load(yaml_str,schema=complex_schema)
+    assert yaml_obj["complex"].data==1
+    yaml_str_2=generate_yaml(1j)
+    yaml_obj_2=load(yaml_str_2,schema=complex_schema)
+    assert yaml_obj_2["complex"].data.real==0
+    assert yaml_obj_2["complex"].data.imag==1
 
 @pytest.mark.unit
 def test_complex_invalid():

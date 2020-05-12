@@ -5,7 +5,7 @@ from scipy.signal import hilbert
 
 from voicechat_modem_dsp.encoders.encode_pad import *
 from voicechat_modem_dsp.modulators import ModulationIntegrityWarning, \
-    ASKModulator, FSKModulator, PSKModulator
+    ASKModulator, FSKModulator, PSKModulator, QAMModulator
 
 import pytest
 
@@ -149,6 +149,43 @@ def test_property_psk_integrity():
             try:
                 modulator=PSKModulator(sampling_freq,
                     carrier_freq,amplitude,phase_list,baud_rate)
+            except ModulationIntegrityWarning:
+                continue
+
+        modulated_data=modulator.modulate(datastream)
+        demodulated_bundle=modulator.demodulate(modulated_data)
+
+        recovered_bitstream=base_16_decode(demodulated_bundle)
+        count_run+=1
+
+        assert bitstream==recovered_bitstream
+
+@pytest.mark.property
+def test_property_qam_integrity():
+    constellation_list=[-1-1j,-1-1/3j,-1+1/3j,-1+1j,
+                        -1/3-1j,-1/3-1/3j,-1/3+1/3j,-1/3+1j,
+                        1/3-1j,1/3-1/3j,1/3+1/3j,1/3+1j,
+                        1-1j,1-1/3j,1+1/3j,1+1j]
+    constellation_list=np.asarray(constellation_list)
+    constellation_list/=np.max(np.abs(constellation_list))
+    count_run=0
+    while count_run<256:
+        # Shuffle as opposed to complete random to test all 0x00-0xff
+        list_data=list(range(256))
+        random.shuffle(list_data)
+        bitstream=bytes(list_data)
+        datastream=base_16_encode(bitstream)
+
+        sampling_freq=get_rand_float(8000,48000)
+        carrier_freq=get_rand_float(256,sampling_freq/2)
+        baud_rate=get_rand_float(128,carrier_freq/4)
+        amplitude=get_rand_float(0.1,1)
+
+        with warnings.catch_warnings():
+            warnings.simplefilter("error",category=ModulationIntegrityWarning)
+            try:
+                modulator=QAMModulator(sampling_freq,
+                    carrier_freq,constellation_list,baud_rate)
             except ModulationIntegrityWarning:
                 continue
 

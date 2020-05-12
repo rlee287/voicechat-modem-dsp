@@ -9,8 +9,8 @@ from scipy.cluster.vq import vq
 
 import warnings
 
-class ASKModulator(BaseModulator):
-    def __init__(self, fs, carrier, amp_list, baud):
+class QAMModulator(BaseModulator):
+    def __init__(self, fs, carrier, constellation_list, baud):
         if carrier<=0:
             raise ValueError("Frequency of carrier must be positive")
         if baud>=0.5*carrier:
@@ -19,24 +19,34 @@ class ASKModulator(BaseModulator):
         # Nyquist limit
         if carrier>=0.5*fs:
             raise ValueError("Carrier frequency is too high for sampling rate")
-        if any((x>1 or x<=0 for x in amp_list)):
-            raise ValueError("Invalid amplitudes given")
 
         self.fs=fs
-        self.amp_list=dict(enumerate(amp_list))
+        self.constellation_list=dict(enumerate(constellation_list))
         self.carrier_freq=carrier
         self.baud=baud
+
+        constellation_magnitudes=np.abs(constellation_list)
+        if any([amp>1 or amp<=0 for amp in constellation_magnitudes]):
+            raise ValueError("Amplitude of constellation points must be positive and at most 1")
+        if any([amp<0.1 for amp in constellation_magnitudes]):
+            warnings.warn("Some amplitudes may be too low "
+                          "to be distinguishable from background noise",
+                          ModulationIntegrityWarning)
+
+        constellation_distances=list()
+        for i in range(len(constellation_list)-1):
+            for j in range(i+1,len(constellation_list)):
+                distance=abs(constellation_list[i]-constellation_list[j])
+                constellation_distances.append(distance)
+
         # Nyquist aliased 2*carrier=carrier
         if carrier>=(1/3)*fs:
             warnings.warn("Carrier frequency is too high to guarantee "
                           "proper lowpass reconstruction",
                           ModulationIntegrityWarning)
-        if any(x<0.1 for x in amp_list):
-            warnings.warn("Some amplitudes may be too low "
-                          "to be distinguishable from background noise",
-                          ModulationIntegrityWarning)
-        if any(dx<=0.05 for dx in np.diff(sorted(amp_list))):
-            warnings.warn("Amplitudes may be too close "
+
+        if min(constellation_distances)<=0.05:
+            warnings.warn("Constellation points may be too close "
                           "to be distinguishable from each other",
                           ModulationIntegrityWarning)
         # TODO: additional warnings relating to filter overshoot and the like
@@ -58,31 +68,32 @@ class ASKModulator(BaseModulator):
         gaussian_sigma=self._calculate_sigma
         gaussian_window=modulator_utils.gaussian_window(self.fs,gaussian_sigma)
 
-        # Map datastream to amplitudes and pad with 0 on both ends
-        amplitude_data = np.pad([self.amp_list[datum] for datum in datastream],
-            1,mode="constant",constant_values=0)
+        # Map datastream to phases and pad with 0 on both ends
+        constellation_data = np.pad([self.constellation_list[datum] for datum in datastream],
+            1,mode="constant",constant_values=0+0j)
 
-        # Upsample amplitude to actual sampling rate
+        # Upsample data to actual sampling rate
         interp_sample_count=int(np.ceil(
-            len(amplitude_data)*samples_per_symbol))
+            len(constellation_data)*samples_per_symbol))
         time_array=modulator_utils.generate_timearray(
             self.fs,interp_sample_count)
-        interpolated_amplitude=modulator_utils.previous_resample_interpolate(
-            time_array, self.baud, amplitude_data)
-        # Smooth amplitudes with Gaussian kernel
-        shaped_amplitude=signal.convolve(interpolated_amplitude,gaussian_window,
+        interpolated_quad=modulator_utils.previous_resample_interpolate(
+            time_array, self.baud, constellation_data)
+        # Smooth values with Gaussian kernel after mapping to complex plane
+        shaped_quad=signal.convolve(interpolated_quad,gaussian_window,
             "same",method="fft")
 
         # Multiply amplitudes by carrier
-        return shaped_amplitude * \
-            np.cos(2*np.pi*self.carrier_freq*time_array)
+        return np.real(shaped_quad * 
+            np.exp(2*np.pi*1j*self.carrier_freq*time_array))
 
     def demodulate(self, modulated_data):
+        # TODO: copy this over to the phase modulator
+        # This is close enough to maybe allow object composition
         samples_per_symbol=modulator_utils.samples_per_symbol(self.fs,self.baud)
-        # Use complex exponential to allow for phase drift
         time_array=modulator_utils.generate_timearray(
             self.fs,len(modulated_data))
-        demod_amplitude=2*modulated_data*np.exp(2*np.pi*1j*self.carrier_freq*time_array)
+        demod_signal=2*modulated_data*np.exp(2*np.pi*1j*self.carrier_freq*time_array)
 
         # Compute filter boundaries
         # Lowend is half the baud (i.e. the fundamental of the data)
@@ -94,12 +105,12 @@ class ASKModulator(BaseModulator):
         if carrier_refl-4000>self.carrier_freq:
             filter_highend=carrier_refl-4000
 
-        # Construct FIR filter, filter demodulated signal, and discard phase
+        # Construct FIR filter and filter demodulated signal
         fir_filt=modulator_utils.lowpass_fir_filter(self.fs, filter_lowend, filter_highend)
         filt_delay=(len(fir_filt)-1)//2
         # First append filt_delay number of zeros to incoming signal
-        demod_amplitude=np.pad(demod_amplitude,(0,filt_delay))
-        filtered_demod_amplitude=np.abs(signal.lfilter(fir_filt,1,demod_amplitude))
+        demod_signal=np.pad(demod_signal,(0,filt_delay))
+        filtered_demod_signal=signal.lfilter(fir_filt,1,demod_signal)
 
         # Extract the original amplitudes via averaging of plateau
 
@@ -107,7 +118,7 @@ class ASKModulator(BaseModulator):
         interval_count=int(np.round(
             len(modulated_data)/samples_per_symbol))
         interval_offset=filt_delay
-        list_amplitudes=list()
+        list_constellation=list()
 
         transition_width=BaseModulator.sigma_mult_t*self._calculate_sigma
         # Convert above time width into sample point width
@@ -126,17 +137,20 @@ class ASKModulator(BaseModulator):
             if i!=interval_count-1:
                 interval_end-=transition_width
             # Find the amplitude by averaging
-            list_amplitudes.append(modulator_utils.average_interval_data(filtered_demod_amplitude, interval_begin, interval_end))
+            avg=modulator_utils.average_interval_data(filtered_demod_signal, 
+                interval_begin, interval_end)
+            list_constellation.append(np.conj(avg))
 
-        # Convert amplitude observations and mapping into vq arguments
+        # Convert observations and mapping into vq arguments
         # Insert the null symbol 0 to account for beginning and end
-        list_amplitudes=[[amplitude] for amplitude in list_amplitudes]
-        code_book=[self.amp_list[i] for i in range(len(self.amp_list))]
-        code_book.insert(0,0.0)
-        code_book=[[obs] for obs in code_book]
+        list_constellation=[[np.real(point),np.imag(point)] for point in list_constellation]
+        code_book=[self.constellation_list[i]
+                    for i in range(len(self.constellation_list))]
+        code_book.insert(0,0+0j)
+        code_book=[[np.real(obs),np.imag(obs)] for obs in code_book]
 
         # Map averages to amplitude points
-        vector_cluster=vq(list_amplitudes,code_book)
+        vector_cluster=vq(list_constellation,code_book)
         # Subtract data points by 1 and remove 0 padding
         # Neat side effect: -1 is an invalid data point
         datastream=vector_cluster[0]-1

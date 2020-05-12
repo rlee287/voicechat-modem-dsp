@@ -13,7 +13,7 @@ import warnings
 class FSKModulator(BaseModulator):
     def __init__(self, fs, amplitude, freq_list, baud):
         if min(freq_list)<=0:
-            raise ValueError("Invalid frequencies given")
+            raise ValueError("Frequencies must be positive")
         if baud>min(freq_list):
             raise ValueError("Baud is too high to be modulated "+
                              "using given frequencies")
@@ -57,7 +57,7 @@ class FSKModulator(BaseModulator):
         # Map datastream to frequencies and pad on both ends
         # Exact padding does not matter because of amplitude shaping
         frequency_data = np.pad([self.freq_list[datum] for datum in datastream],
-            1,mode="constant",constant_values=0)
+            1,mode="edge")
 
         # Upsample frequency to actual sampling rate
         interp_sample_count=int(np.ceil(

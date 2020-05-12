@@ -11,6 +11,7 @@ Welcome to Voicechat Modem (DSP Component)'s documentation!
    :caption: Contents:
 
    notebooks/Pre-Modulation Gaussian Smoothing
+   notebooks/QAM Modulator
    notebooks/FSK Modulator
    specs/config
 

@@ -1,3 +1,11 @@
+"""
+Functions that convert between bitstreams and datastreams.
+
+Bitstreams are bytes or bytearray, and datastreams are List[int].
+The *_encode functions convert a bitstream to a datastream,
+and the *_decode functions convert in the opposite direction.
+"""
+
 from .bitstream import read_bitstream_iterator, write_bitstream
 from .bitstream import readable_bytearr, writeable_bytearr
 

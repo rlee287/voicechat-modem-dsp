@@ -12,7 +12,7 @@ import pytest
 def get_rand_float(lower, upper):
     return random.random()*(upper-lower)+lower
 
-@pytest.mark.filterwarnings("ignore")
+#@pytest.mark.filterwarnings("ignore")
 @pytest.mark.unit
 def test_unit_ask_integrity_novoice():
     amplitude_list=list(np.linspace(0.1,1,16))
@@ -31,7 +31,7 @@ def test_unit_ask_integrity_novoice():
 
     assert bitstream==recovered_bitstream
 
-@pytest.mark.filterwarnings("ignore")
+#@pytest.mark.filterwarnings("ignore")
 @pytest.mark.unit
 def test_unit_ask_integrity_voice():
     amplitude_list=list(np.geomspace(0.1,1,16))
@@ -70,7 +70,7 @@ def test_unit_fsk_integrity_bell_202():
 
     assert bitstream==recovered_bitstream
 
-@pytest.mark.filterwarnings("ignore")
+#@pytest.mark.filterwarnings("ignore")
 @pytest.mark.unit
 def test_unit_fsk_integrity_high_pitch():
     frequency_list=[8000,10000,12000,14000]
@@ -89,6 +89,42 @@ def test_unit_fsk_integrity_high_pitch():
     recovered_bitstream=base_4_decode(demodulated_datastream)
 
     assert bitstream==recovered_bitstream
+
+@pytest.mark.unit
+def test_property_silence_corruption():
+    amplitude_list=[0.25,0.5,0.75,1]
+    phase_list=2*np.pi*np.asarray([0,0.25,0.5,0.75])
+    qam_list=[0.5+0.5j,0.5-0.5j,-0.5-0.5j,-0.5+0.5j]
+    freq_list=[50,100,150,200]
+    input_sequence=[0,1,3,2,3,1,0,1,2,3]
+
+    ask_mod=ASKModulator(1000,100,amplitude_list,25)
+    psk_mod=PSKModulator(1000,100,1,phase_list,25)
+    qam_mod=QAMModulator(1000,100,qam_list,25)
+    fsk_mod=FSKModulator(1000,1,freq_list,25)
+
+    ask_out=ask_mod.modulate(input_sequence)
+    psk_out=psk_mod.modulate(input_sequence)
+    qam_out=qam_mod.modulate(input_sequence)
+    fsk_out=fsk_mod.modulate(input_sequence)
+
+    ask_out[len(ask_out)//2:]=0
+    psk_out[len(psk_out)//2:]=0
+    qam_out[len(qam_out)//2:]=0
+    fsk_out[len(fsk_out)//2:]=0
+
+    with pytest.warns(ModulationIntegrityWarning):
+        ask_recovered_sequence=ask_mod.demodulate(ask_out)
+        assert -1 in ask_recovered_sequence
+    with pytest.warns(ModulationIntegrityWarning):
+        psk_recovered_sequence=psk_mod.demodulate(ask_out)
+        assert -1 in psk_recovered_sequence
+    with pytest.warns(ModulationIntegrityWarning):
+        qam_recovered_sequence=qam_mod.demodulate(ask_out)
+        assert -1 in qam_recovered_sequence
+    with pytest.warns(ModulationIntegrityWarning):
+        fsk_recovered_sequence=fsk_mod.demodulate(ask_out)
+        assert -1 in fsk_recovered_sequence
 
 @pytest.mark.property
 def test_property_ask_integrity():

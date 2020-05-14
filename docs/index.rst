@@ -10,6 +10,7 @@ Welcome to Voicechat Modem (DSP Component)'s documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   notebooks/Datastream Upsampling
    notebooks/Pre-Modulation Gaussian Smoothing
    notebooks/QAM Modulator
    notebooks/FSK Modulator

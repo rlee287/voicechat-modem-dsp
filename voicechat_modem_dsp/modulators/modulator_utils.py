@@ -84,6 +84,8 @@ def gaussian_window(fs, sigma_dt):
     """
     Computes a gaussian smoothing filter given sampling rate and sigma time
     """
+    if fs<=0 or sigma_dt<=0:
+        raise ValueError("Inputs must be positive")
     sigma=sigma_dt*fs
     sample_count=np.ceil(6*sigma+1)
     if sample_count%2==0:
@@ -100,6 +102,8 @@ def fred_harris_fir_tap_count(fs, transition_width, db_attenuation):
     https://dsp.stackexchange.com/questions/37646/filter-order-rule-of-thumb
     """
     #N=[fs/delta(f)]∗[atten(dB)/22]
+    if fs<=0 or transition_width<=0 or db_attenuation<=0:
+        raise ValueError("Inputs must be positive")
     filter_tap_count=fs/transition_width
     filter_tap_count*=db_attenuation/22
     filter_tap_count=int(np.ceil(filter_tap_count))
@@ -116,6 +120,10 @@ def lowpass_fir_filter(fs,cutoff_low,cutoff_high,attenuation=80):
         raise ValueError("High cutoff must be larger than low cutoff")
     if cutoff_low>=0.5*fs or cutoff_high>=0.5*fs:
         raise ValueError("Cutoffs must be lower than Nyquist limit")
+    if fs<=0:
+        raise ValueError("Sampling frequency must be positive")
+    if cutoff_low<=0 or cutoff_high<=0:
+        raise ValueError("Cutoffs must be positive")
 
     tap_count=fred_harris_fir_tap_count(fs,cutoff_high-cutoff_low,attenuation)
 
@@ -146,6 +154,8 @@ def goertzel_iir(freq,fs):
     """
     if freq>=0.5*fs:
         raise ValueError("Desired peak frequency is too high")
+    if fs<=0:
+        raise ValueError("Sampling frequency must be positive")
     norm_freq=2*np.pi*freq/fs
     numerator=[1,-np.exp(-1j*norm_freq)]
     denominator=[1,-2*np.cos(norm_freq),1]

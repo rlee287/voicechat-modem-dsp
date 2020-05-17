@@ -152,10 +152,10 @@ def goertzel_iir(freq,fs):
 
     Derivation of formula from https://www.dsprelated.com/showarticle/796.php
     """
-    if freq>=0.5*fs:
-        raise ValueError("Desired peak frequency is too high")
     if fs<=0:
         raise ValueError("Sampling frequency must be positive")
+    if abs(freq)>=0.5*fs:
+        raise ValueError("Desired peak frequency is too high")
     norm_freq=2*np.pi*freq/fs
     numerator=[1,-np.exp(-1j*norm_freq)]
     denominator=[1,-2*np.cos(norm_freq),1]

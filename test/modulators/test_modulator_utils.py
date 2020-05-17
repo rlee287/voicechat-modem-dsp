@@ -17,13 +17,22 @@ def test_property_generate_timearray():
         assert np.abs(timearr[-1]-1) < epsilon
 
 @pytest.mark.unit
-def test_filtergen_error():
+def test_unit_filtergen_parameters():
     with pytest.raises(ValueError):
         filt=lowpass_fir_filter(2000,500,100)
     with pytest.raises(ValueError):
         filt=lowpass_fir_filter(2000,1000,4000)
     with pytest.raises(ValueError):
         filt=goertzel_iir(3,2)
+    with pytest.raises(ValueError):
+        filt=goertzel_iir(-3,2)
+    # These should not error
+    goertzel_iir(1,8)
+    goertzel_iir(-1,8)
+    with pytest.raises(ValueError):
+        filt=lowpass_fir_filter(-100,20,40)
+    with pytest.raises(ValueError):
+        filt=goertzel_iir(2,-16)
 
 @pytest.mark.unit
 def test_unit_average_int():

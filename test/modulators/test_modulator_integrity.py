@@ -12,7 +12,7 @@ import pytest
 def get_rand_float(lower, upper):
     return random.random()*(upper-lower)+lower
 
-#@pytest.mark.filterwarnings("ignore")
+@pytest.mark.filterwarnings("ignore")
 @pytest.mark.unit
 def test_unit_ask_integrity_novoice():
     amplitude_list=list(np.linspace(0.1,1,16))
@@ -31,7 +31,7 @@ def test_unit_ask_integrity_novoice():
 
     assert bitstream==recovered_bitstream
 
-#@pytest.mark.filterwarnings("ignore")
+@pytest.mark.filterwarnings("ignore")
 @pytest.mark.unit
 def test_unit_ask_integrity_voice():
     amplitude_list=list(np.geomspace(0.1,1,16))

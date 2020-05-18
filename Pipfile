@@ -15,9 +15,11 @@ matplotlib = "*"
 [dev-packages]
 pytest = "*"
 coverage = "*"
-sphinx = "*"
+Sphinx = "*"
 nbsphinx = "*"
 itikz = "*"
+pytest-xdist = "*"
+pytest-cov = "*"
 
 [dev-packages.mypy]
 version = "*"

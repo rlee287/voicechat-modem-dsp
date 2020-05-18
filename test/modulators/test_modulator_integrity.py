@@ -70,7 +70,7 @@ def test_unit_fsk_integrity_bell_202():
 
     assert bitstream==recovered_bitstream
 
-#@pytest.mark.filterwarnings("ignore")
+@pytest.mark.filterwarnings("ignore")
 @pytest.mark.unit
 def test_unit_fsk_integrity_high_pitch():
     frequency_list=[8000,10000,12000,14000]

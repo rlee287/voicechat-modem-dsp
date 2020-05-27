@@ -99,7 +99,8 @@ class ASKModulator(BaseModulator):
         filt_delay=(len(fir_filt)-1)//2
         # First append filt_delay number of zeros to incoming signal
         demod_amplitude=np.pad(demod_amplitude,(0,filt_delay))
-        filtered_demod_amplitude=np.abs(signal.lfilter(fir_filt,1,demod_amplitude))
+        filtered_demod_amplitude=np.abs(signal.oaconvolve(
+            fir_filt,demod_amplitude,"full"))
 
         # Extract the original amplitudes via averaging of plateau
 

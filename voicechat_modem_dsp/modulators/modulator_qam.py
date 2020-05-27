@@ -110,7 +110,7 @@ class QAMModulator(BaseModulator):
         filt_delay=(len(fir_filt)-1)//2
         # First append filt_delay number of zeros to incoming signal
         demod_signal=np.pad(demod_signal,(0,filt_delay))
-        filtered_demod_signal=signal.lfilter(fir_filt,1,demod_signal)
+        filtered_demod_signal=signal.oaconvolve(fir_filt,demod_signal,"full")
 
         # Extract the original amplitudes via averaging of plateau
 

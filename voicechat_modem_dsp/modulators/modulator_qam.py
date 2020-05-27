@@ -128,7 +128,7 @@ class QAMModulator(BaseModulator):
             interval_begin=interval_offset+i*samples_per_symbol
             # Perform min in order to account for floating point weirdness
             interval_end=min(interval_begin+samples_per_symbol,
-                len(modulated_data)-1)
+                interval_offset+len(modulated_data)-1)
 
             # Shrink interval by previously calculated transition width
             # Skip doing so for first and last sample

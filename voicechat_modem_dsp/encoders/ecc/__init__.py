@@ -1,3 +1,5 @@
-from .hamming_7_4 import hamming_encode_7_4, hamming_decode_7_4
+from .base_ecc import BaseECC
+from .ecc_passthrough import NoECC
+from .hamming_7_4 import Hamming_7_4_ECC
 
-__all__=["hamming_encode_7_4","hamming_decode_7_4"]
+# Use default __all__

@@ -9,7 +9,7 @@ from .command_utils import CLIError, ExtendedCommand
 
 from ..modulators import ASKModulator, PSKModulator, QAMModulator, FSKModulator
 from ..encoders import encode_function_mappings, decode_function_mappings
-from ..encoders.ecc import hamming_7_4
+from ..encoders.ecc import *
 
 """
 Decorator for class methods that catches CLIErrors, prints the error,
@@ -99,13 +99,15 @@ class TxFile(ExtendedCommand):
 
         with open(input_file_name,"rb") as fil:
             bitstream=fil.read()
+        ecc_object=NoECC() # type: BaseECC
         if config_obj["ecc"].data in ["none","raw"]:
             pass
         elif config_obj["ecc"].data in ["hamming_7_4"]:
-            bitstream=hamming_7_4.hamming_encode_7_4(bitstream)
+            ecc_object=Hamming_7_4_ECC()
         else:
             # Should never happen
             raise CLIError("Invalid ECC mode found late; should have been caught earlier","error") # pragma: no cover
+        bitstream=ecc_object.encode(bitstream)
         datastream=datastream_encoder(bitstream)
         self.line("Modulating data...")
         modulated_datastream=modulator_obj.modulate(datastream)
@@ -184,13 +186,15 @@ class RxFile(ExtendedCommand):
         bitstream=datastream_decoder(datastream)
 
         self.line("Writing demodulated data...")
+        ecc_object=NoECC() # type: BaseECC
         if config_obj["ecc"].data in ["none","raw"]:
             pass
         elif config_obj["ecc"].data in ["hamming_7_4"]:
-            bitstream=hamming_7_4.hamming_decode_7_4(bitstream)
+            ecc_object=Hamming_7_4_ECC()
         else:
             # Should never happen
             raise CLIError("Invalid ECC mode found late; should have been caught earlier","error") # pragma: no cover
+        bitstream=ecc_object.decode(bitstream)
 
         with open(output_file_name,"wb") as fil:
             fil.write(bitstream)

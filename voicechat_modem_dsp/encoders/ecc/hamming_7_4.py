@@ -1,6 +1,6 @@
 import math
 
-from .base_ecc import BaseECC
+from .ecc_base import BaseECC
 from ..bitstream import read_bitstream, write_bitstream
 from ..bitstream import readable_bytearr
 

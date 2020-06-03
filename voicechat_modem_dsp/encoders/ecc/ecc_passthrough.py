@@ -1,4 +1,4 @@
-from .base_ecc import BaseECC
+from .ecc_base import BaseECC
 
 class NoECC(BaseECC):
     """

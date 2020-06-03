@@ -21,12 +21,13 @@ def test_extendedcmd_noninteractive():
         extended_cmd.confirm_file_writable("__init__.py")
 
     # Cannot write to directory
+    directory_name="nonsense_dir_noninteractive"
     try:
-        os.mkdir("nonsense")
+        os.mkdir(directory_name)
         with pytest.raises(FileExistsAndCannotOverwriteException):
-            extended_cmd.confirm_file_writable("nonsense")
+            extended_cmd.confirm_file_writable(directory_name)
     finally:
-        os.rmdir("nonsense")
+        os.rmdir(directory_name)
 
 @pytest.mark.unit
 def test_extendedcmd_interactive():
@@ -36,12 +37,13 @@ def test_extendedcmd_interactive():
     # Can write to nonexistent file
     extended_cmd.confirm_file_writable("garbage")
     # Cannot write to directory
+    directory_name="nonsense_dir_interactive"
     try:
-        os.mkdir("nonsense")
+        os.mkdir(directory_name)
         with pytest.raises(FileExistsAndCannotOverwriteException):
-            extended_cmd.confirm_file_writable("nonsense")
+            extended_cmd.confirm_file_writable(directory_name)
     finally:
-        os.rmdir("nonsense")
+        os.rmdir(directory_name)
 
     # Cannot write to existent file when nonconfirmed
     with pytest.raises(FileExistsAndCannotOverwriteException):

@@ -1,10 +1,10 @@
 import math
 
-from .ecc_base import BaseECC
+from .ecc_bitstream_base import BaseBitstreamECC
 from ..bitstream import read_bitstream, write_bitstream
 from ..bitstream import readable_bytearr
 
-class Hamming_7_4_ECC(BaseECC):
+class Hamming_7_4_ECC(BaseBitstreamECC):
     """
     Performs ECC using a Hamming 7,4 code
     """

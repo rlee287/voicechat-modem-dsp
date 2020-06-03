@@ -1,6 +1,6 @@
-from .ecc_base import BaseECC
+from .ecc_bitstream_base import BaseBitstreamECC
 
-class NoECC(BaseECC):
+class NoECC(BaseBitstreamECC):
     """
     Passthrough object that does not perform any ECC
     """

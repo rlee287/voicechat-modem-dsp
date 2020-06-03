@@ -99,7 +99,7 @@ class TxFile(ExtendedCommand):
 
         with open(input_file_name,"rb") as fil:
             bitstream=fil.read()
-        ecc_object=NoECC() # type: BaseECC
+        ecc_object=NoECC() # type: BaseBitstreamECC
         if config_obj["ecc"].data in ["none","raw"]:
             pass
         elif config_obj["ecc"].data in ["hamming_7_4"]:
@@ -186,7 +186,7 @@ class RxFile(ExtendedCommand):
         bitstream=datastream_decoder(datastream)
 
         self.line("Writing demodulated data...")
-        ecc_object=NoECC() # type: BaseECC
+        ecc_object=NoECC() # type: BaseBitstreamECC
         if config_obj["ecc"].data in ["none","raw"]:
             pass
         elif config_obj["ecc"].data in ["hamming_7_4"]:

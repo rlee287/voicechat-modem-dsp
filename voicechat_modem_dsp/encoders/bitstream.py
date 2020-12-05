@@ -12,13 +12,13 @@ def read_bitstream(bitstream: readable_bytearr, position: int) -> bool:
         raise ValueError("Position index is out of range")
     byteindex=position//8
     shift_val=7-position%8
-    return bool((bitstream[byteindex] & (1<<shift_val)) >> shift_val)
+    return bool(bitstream[byteindex] & (1<<shift_val))
 
 def read_bitstream_iterator(bitstream: readable_bytearr) -> Iterator[bool]:
     """Create a bitwise interator over the given bitstream."""
     for byte in bitstream:
         for shift_val in range(7,-1,-1):
-            yield bool((byte & (1<<shift_val)) >> shift_val)
+            yield bool(byte & (1<<shift_val))
 
 def write_bitstream(bitstream: writeable_bytearr,
         position: int, bit: bool) -> None:

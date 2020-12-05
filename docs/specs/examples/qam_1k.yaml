@@ -1,0 +1,8 @@
+version: 0.1
+fs: 48000
+ecc: none
+modulators:
+  - mode: qam
+    baud: 256
+    carrier: 1000
+    constellation: 0.5+0.5i,0.5,0.5-0.5i,0.5i,-0.5i,-0.5+0.5i,-0.5,-0.5-0.5i

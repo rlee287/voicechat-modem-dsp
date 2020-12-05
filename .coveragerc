@@ -1,0 +1,4 @@
+[run]
+omit=
+    *_base.py
+    voicechat_modem_dsp/__main__.py

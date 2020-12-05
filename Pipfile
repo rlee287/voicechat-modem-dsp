@@ -5,10 +5,26 @@ name = "pypi"
 
 [packages]
 numpy = "*"
-scipy = "*"
+scipy = {version = ">=1.4.0"}
 protobuf = "*"
+ipykernel = "*"
+cleo = "*"
+strictyaml = "*"
+matplotlib = "*"
 
 [dev-packages]
 pytest = "*"
-mypy = {version="*", python_version=">='3.5'"}
 coverage = "*"
+Sphinx = "*"
+nbsphinx = "*"
+itikz = "*"
+pytest-xdist = "*"
+pytest-cov = "*"
+
+[dev-packages.mypy]
+version = "*"
+python_version = ">='3.5'"
+
+[dev-packages.numpy-stubs]
+git = "https://github.com/numpy/numpy-stubs.git"
+editable = true

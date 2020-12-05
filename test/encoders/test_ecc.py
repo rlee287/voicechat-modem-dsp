@@ -1,7 +1,11 @@
 import random
 
+import pytest
+
+from voicechat_modem_dsp.encoders.bitstream import *
 from voicechat_modem_dsp.encoders.ecc.hamming_7_4 import *
 
+@pytest.mark.property
 def test_property_corrupt_hamming_nonmangle():
     for _ in range(64):
         n=random.randint(1,256)
@@ -10,6 +14,7 @@ def test_property_corrupt_hamming_nonmangle():
         recovered_perfect=hamming_decode_7_4(hamming_data_test)
         assert data_test==recovered_perfect
 
+@pytest.mark.property
 def test_property_corrupt_hamming_recoverable_err():
     for _ in range(64):
         n=random.randint(1,256)
